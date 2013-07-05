@@ -8,7 +8,7 @@ Usage:
 
 `auto-index [-t Node|Relationship] [-r] name age title` 
 
-- -r removes the indexed properties
+- -r stops indexing those properties
 
 ### Cypher Import `import`
 
@@ -47,3 +47,13 @@ id	name
 3	Rana
 4	Selma
 ````
+
+Installation:
+
+````
+mvn clean package dependency:copy-dependencies
+
+cp target/import-tools-1.0-SNAPSHOT.jar target/dependency/opencsv-2.3.jar /path/to/neo/lib/
+````
+
+or make those two files available on your neo4j-shell classpath

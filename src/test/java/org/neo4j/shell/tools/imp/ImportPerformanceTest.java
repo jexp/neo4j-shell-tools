@@ -1,6 +1,7 @@
 package org.neo4j.shell.tools.imp;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.ShellException;
@@ -19,6 +20,7 @@ import static org.junit.Assert.*;
 /**
  * Created by mh on 04.07.13.
  */
+@Ignore
 public class ImportPerformanceTest {
 
     public static final int ROWS = 1000000;
