@@ -19,19 +19,19 @@ import static org.junit.Assert.*;
 /**
  * Created by mh on 04.07.13.
  */
-public class ImportAppTest {
+public class ImportCypherAppTest {
 
     private GraphDatabaseAPI db;
     private SameJvmClient client;
 
     @Test
     public void testExecuteCypher() throws Exception {
-        assertCommand("import start n=node(0) return n","Import statement execution created 1 rows of output.");
+        assertCommand("import-cypher start n=node(0) return n","Import statement execution created 1 rows of output.");
     }
 
     @Test
     public void testRunWithOutputFile() throws Exception {
-        assertCommand("import -o out.csv create n return id(n) as id","Import statement execution created 1 rows of output.");
+        assertCommand("import-cypher -o out.csv create n return id(n) as id","Import statement execution created 1 rows of output.");
         assertFile("id", "1");
         assertNotNull(db.getNodeById(1));
     }
@@ -39,14 +39,14 @@ public class ImportAppTest {
     @Test
     public void testRunWithInputFile() throws Exception {
         createFile("in.csv", "name", "foo");
-        assertCommand("import -i in.csv create (n {name:{name}}) return n.name as name", "Import statement execution created 1 rows of output.");
+        assertCommand("import-cypher -i in.csv create (n {name:{name}}) return n.name as name", "Import statement execution created 1 rows of output.");
         assertEquals("foo",db.getNodeById(1).getProperty("name"));
     }
     @Test
     public void testRunWithInputAndOutputFile() throws Exception {
         String[] data = {"name", "foo", "bar"};
         createFile("in.csv", data);
-        assertCommand("import -i in.csv -o out.csv create (n {name:{name}}) return n.name as name", "Import statement execution created 2 rows of output.");
+        assertCommand("import-cypher -i in.csv -o out.csv create (n {name:{name}}) return n.name as name", "Import statement execution created 2 rows of output.");
         assertFile(data);
         assertEquals("foo",db.getNodeById(1).getProperty("name"));
         assertEquals("bar",db.getNodeById(2).getProperty("name"));
@@ -62,7 +62,7 @@ public class ImportAppTest {
 
     @Test
     public void testRunWithOutputFileAndMultipleLines() throws Exception {
-        assertCommand("import -o out.csv start x=node(0,0) create n return id(n) as id","Import statement execution created 2 rows of output.");
+        assertCommand("import-cypher -o out.csv start x=node(0,0) create n return id(n) as id","Import statement execution created 2 rows of output.");
         assertFile("id","1","2");
         assertNotNull(db.getNodeById(1));
         assertNotNull(db.getNodeById(2));

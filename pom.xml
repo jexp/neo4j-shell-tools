@@ -24,6 +24,13 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>neo4j</id>
+            <url>http://m2.neo4j.org/content/repositories/snapshots/</url>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>net.sf.opencsv</groupId>
@@ -32,15 +39,26 @@
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-geoff</artifactId>
+            <version>1.7-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.neo4j</groupId>
+                    <artifactId>neo4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.neo4j</groupId>
             <artifactId>neo4j</artifactId>
             <version>${neo4j.version}</version>
-            <scope>provided</scope>
+            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-shell</artifactId>
             <version>${neo4j.version}</version>
-            <scope>provided</scope>
+            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>junit</groupId>

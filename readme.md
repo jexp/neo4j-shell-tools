@@ -10,9 +10,9 @@ Usage:
 
 - -r stops indexing those properties
 
-### Cypher Import `import`
+### Cypher Import `import-cypher`
 
-`import [-i in.csv] [-o out.csv] [-d,] [-q] [-b 10000] create (n {name: {name}, age: {age}}) return id(n) as id, n.name as name`
+`import-cypher [-i in.csv] [-o out.csv] [-d,] [-q] [-b 10000] create (n {name: {name}, age: {age}}) return id(n) as id, n.name as name`
 
 - -i file.csv: tab or comma separated input data file, with header, header names are param-names, statement will be executed with each row
 - -o file.csv: tab or comma separated output data file, all cypher result rows will be written to file, column labels become headers
@@ -32,7 +32,7 @@ Selma	5
 
 Running the command:
 
-`import -i in.csv -o out.csv create (n {name: {name}, age: {age}}) return id(n) as id, n.name as name`
+`import-cypher -i in.csv -o out.csv create (n {name: {name}, age: {age}}) return id(n) as id, n.name as name`
 
 Output
 
@@ -47,6 +47,29 @@ id	name
 3	Rana
 4	Selma
 ````
+
+### Geoff Import `import-geoff`
+
+`import-cypher [-g in.geoff]`
+
+- -g in.geoff: newline separated geoff rule file
+
+Example input file: in.geoff
+
+````
+(A) {"name": "Alice"}
+(B) {"name": "Bob"}
+(A)-[r:KNOWS]->(B)
+````
+
+Running the command:
+
+`import-cypher -i in.geoff`
+
+Output
+
+`Geoff statement execution created 3 entities.`
+
 
 Installation:
 

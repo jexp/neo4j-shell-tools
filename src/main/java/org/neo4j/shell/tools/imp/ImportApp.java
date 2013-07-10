@@ -2,12 +2,10 @@ package org.neo4j.shell.tools.imp;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-import org.neo4j.cypher.javacompat.ExecutionEngine;
-import org.neo4j.cypher.javacompat.ExecutionResult;
-import org.neo4j.graphdb.Transaction;
-import org.neo4j.helpers.collection.IteratorUtil;
-import org.neo4j.kernel.impl.util.StringLogger;
-import org.neo4j.shell.*;
+import org.neo4j.kernel.GraphDatabaseAPI;
+import org.neo4j.shell.AppCommandParser;
+import org.neo4j.shell.OptionDefinition;
+import org.neo4j.shell.OptionValueType;
 import org.neo4j.shell.kernel.apps.GraphDatabaseApp;
 
 import java.io.*;
@@ -16,14 +14,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Created by mh on 04.07.13.
+ * Created by mh on 10.07.13.
  */
-public class ImportApp extends GraphDatabaseApp {
-
-    public static final char QUOTECHAR = '"';
+public abstract class ImportApp extends GraphDatabaseApp {
     public static final int DEFAULT_BATCH_SIZE = 20000;
-
-    private ExecutionEngine engine;
+    public static final char QUOTECHAR = '"';
 
     {
         addOptionDefinition( "i", new OptionDefinition( OptionValueType.MUST,
@@ -38,42 +33,7 @@ public class ImportApp extends GraphDatabaseApp {
                 "Quoted Strings in file" ) );
     }
 
-    protected ExecutionEngine getEngine() {
-        if (engine==null) engine=new ExecutionEngine(getServer().getDb(), StringLogger.SYSTEM);
-        return engine;
-    }
-
-    @Override
-    public String getName() {
-        return "import";
-    }
-
-    @Override
-    protected Continuation exec(AppCommandParser parser, Session session, Output out) throws Exception {
-        char delim = parser.option("d", ",").charAt(0);
-        int batchSize = Integer.parseInt(parser.option("b", String.valueOf(DEFAULT_BATCH_SIZE)));
-        boolean quotes = parser.options().containsKey("q");
-        File inputFile = fileFor(parser, "i");
-        File outputFile = fileFor(parser, "o");
-        String query = extractQuery(parser);
-
-        CSVReader reader = createReader(inputFile, delim, quotes);
-
-        CSVWriter writer = createWriter(outputFile, delim, quotes);
-
-        int count;
-        if (reader==null) {
-            count = execute(query, writer);
-        } else {
-            count = executeOnInput(reader, query, writer, batchSize);
-        }
-        out.println("Import statement execution created "+count+" rows of output.");
-        if (reader!=null) reader.close();
-        if (writer!=null) writer.close();
-        return Continuation.INPUT_COMPLETE;
-    }
-
-    private String extractQuery(AppCommandParser parser) {
+    protected String extractQuery(AppCommandParser parser) {
         String line = parser.getLineWithoutApp().trim();
         Map<String, String> options = new HashMap<String, String>(parser.options());
         while (!options.isEmpty() && line.startsWith("-")) {
@@ -85,66 +45,25 @@ public class ImportApp extends GraphDatabaseApp {
         return line;
     }
 
-    private CSVWriter createWriter(File outputFile, char delim, boolean quotes) throws IOException {
+    protected CSVWriter createWriter(File outputFile, char delim, boolean quotes) throws IOException {
         if (outputFile==null) return null;
-        FileWriter file = new FileWriter(outputFile);
+        Writer file = new BufferedWriter(new FileWriter(outputFile));
         return quotes ? new CSVWriter(file,delim, QUOTECHAR) : new CSVWriter(file,delim);
     }
 
-    private CSVReader createReader(File inputFile, char delim, boolean quotes) throws FileNotFoundException {
-        if (inputFile==null) return null;
-        FileReader reader = new FileReader(inputFile);
+    protected CSVReader createReader(File inputFile, char delim, boolean quotes) throws FileNotFoundException {
+        BufferedReader reader = createReader(inputFile);
+        if (reader==null) return null;
         return quotes ? new CSVReader(reader,delim, QUOTECHAR) : new CSVReader(reader,delim);
     }
 
-    private int execute(String query, CSVWriter writer) {
-        ExecutionResult result = getEngine().execute(query);
-        return writeResult(result, writer,true);
+    protected BufferedReader createReader(File inputFile) throws FileNotFoundException {
+        if (inputFile==null) return null;
+        FileReader reader = new FileReader(inputFile);
+        return new BufferedReader(reader);
     }
 
-    private int executeOnInput(CSVReader reader, String query, CSVWriter writer, int batchSize) throws IOException {
-        Map<String, Object> params = createParams(reader);
-        String[] input;
-        boolean first = true;
-        int outCount = 0, inCount = 0;
-        Transaction tx = getServer().getDb().beginTx();
-        try {
-            while ((input = reader.readNext()) != null) {
-                ExecutionResult result = getEngine().execute(query, update(params, input));
-                outCount += writeResult(result, writer, first);
-                first = false;
-                inCount++;
-                if (inCount % batchSize == 0) {
-                    tx.success();
-                    tx.finish();
-                    tx = getServer().getDb().beginTx();
-                }
-            }
-            tx.success();
-        } finally {
-            tx.finish();
-        }
-        return outCount;
-    }
-
-    private int writeResult(ExecutionResult result, CSVWriter writer, boolean first) {
-        if (writer==null) return IteratorUtil.count(result);
-        String[] cols = new String[result.columns().size()];
-        result.columns().toArray(cols);
-        String[] data = new String[cols.length];
-        if (first) {
-            writer.writeNext(cols);
-        }
-
-        int count=0;
-        for (Map<String, Object> row : result) {
-            writeRow(writer, cols, data, row);
-            count++;
-        }
-        return count;
-    }
-
-    private void writeRow(CSVWriter writer, String[] cols, String[] data, Map<String, Object> row) {
+    protected void writeRow(CSVWriter writer, String[] cols, String[] data, Map<String, Object> row) {
         for (int i = 0; i < cols.length; i++) {
             String col = cols[i];
             data[i]=row.get(col).toString();
@@ -152,7 +71,7 @@ public class ImportApp extends GraphDatabaseApp {
         writer.writeNext(data);
     }
 
-    private Map<String, Object> createParams(CSVReader reader) throws IOException {
+    protected Map<String, Object> createParams(CSVReader reader) throws IOException {
         String[] header = reader.readNext();
         Map<String,Object> params=new LinkedHashMap<String,Object>();
         for (String name : header) {
@@ -161,7 +80,7 @@ public class ImportApp extends GraphDatabaseApp {
         return params;
     }
 
-    private Map<String, Object> update(Map<String, Object> params, String[] input) {
+    protected Map<String, Object> update(Map<String, Object> params, String[] input) {
         int col=0;
         for (Map.Entry<String, Object> param : params.entrySet()) {
             param.setValue(input[col++]);
@@ -169,11 +88,7 @@ public class ImportApp extends GraphDatabaseApp {
         return params;
     }
 
-    private File fileFor(AppCommandParser parser, String option) {
-        String fileName = parser.option(option, null);
-        if (fileName==null) return null;
-        File file = new File(fileName);
-        if (option.equals("o") || file.exists() && file.canRead() && file.isFile()) return file;
-        return null;
+    protected GraphDatabaseAPI getDb() {
+        return getServer().getDb();
     }
 }

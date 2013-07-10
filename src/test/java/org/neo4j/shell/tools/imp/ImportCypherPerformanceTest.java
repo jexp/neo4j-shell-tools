@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
  * Created by mh on 04.07.13.
  */
 @Ignore
-public class ImportPerformanceTest {
+public class ImportCypherPerformanceTest {
 
     public static final int ROWS = 1000000;
     private GraphDatabaseAPI db;
