@@ -44,8 +44,8 @@ public class ImportGeoffApp extends GraphDatabaseApp {
         int count = 0;
         if (geoffReader!=null) {
             count = execute(geoffReader);
+            out.println("Geoff import of "+geoffFile.getName()+" created "+count+" entities.");
         }
-        out.println("Geoff statement execution created "+count+" entities.");
         if (geoffReader!=null) geoffReader.close();
         return Continuation.INPUT_COMPLETE;
     }

@@ -27,7 +27,7 @@ public class ImportGeoffAppTest {
     @Test
     public void testRunWithInputFile() throws Exception {
         createFile("in.geoff", "(A) {\"name\": \"foo\"}");
-        assertCommand("import-geoff -g in.geoff", "Geoff statement execution created 1 entities.");
+        assertCommand("import-geoff -g in.geoff", "Geoff import of in.geoff created 1 entities.");
         assertEquals("foo",db.getNodeById(1).getProperty("name"));
     }
     @Test
@@ -36,7 +36,7 @@ public class ImportGeoffAppTest {
                 "(A) {\"name\": \"Alice\"}",
                 "(B) {\"name\": \"Bob\"}",
                 "(A)-[r:KNOWS]->(B)");
-        assertCommand("import-geoff -g in.geoff", "Geoff statement execution created 3 entities.");
+        assertCommand("import-geoff -g in.geoff", "Geoff import of in.geoff created 3 entities.");
         assertEquals("Alice",db.getNodeById(1).getProperty("name"));
         assertEquals("Bob",db.getNodeById(2).getProperty("name"));
         assertEquals("KNOWS",db.getRelationshipById(0).getType().name());

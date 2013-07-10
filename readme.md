@@ -68,7 +68,7 @@ Running the command:
 
 Output
 
-`Geoff statement execution created 3 entities.`
+`Geoff import created 3 entities.`
 
 
 Installation:
