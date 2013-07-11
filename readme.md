@@ -12,12 +12,12 @@ Usage:
 
 ### Cypher Import `import-cypher`
 
-`import-cypher [-i in.csv] [-o out.csv] [-d,] [-q] [-b 10000] create (n {name: {name}, age: {age}}) return id(n) as id, n.name as name`
+`import-cypher [-i in.csv] [-o out.csv] [-d ,] [-q] [-b 10000] create (n {name: {name}, age: {age}}) return id(n) as id, n.name as name`
 
 - -i file.csv: tab or comma separated input data file, with header, header names are param-names, statement will be executed with each row
 - -o file.csv: tab or comma separated output data file, all cypher result rows will be written to file, column labels become headers
 - -q: input/output file with quotes
-- -d delim: delim used to separate files
+- -d delim: delim used to separate files (e.g. `-d " ", -d \t -d ,` )
 - -b size: batch size for intermediate commits
 - uses opencsv-2.3.jar
 
