@@ -53,24 +53,6 @@ public class ImportCypherAppTest {
     }
 
     @Test
-    public void testRunWithInputFileWithTabDelim() throws Exception {
-        createFile("in.csv", "name\tage", "foo\t12");
-        assertCommand("import-cypher -d \"\\t\" -i in.csv create (n {name:{name}, age:{age}}) return n.name as name",
-                "Query: create (n {name:{name}, age:{age}}) return n.name as name infile in.csv delim '\t' quoted false outfile (none) batch-size 20000",
-                "Import statement execution created 1 rows of output.");
-        assertEquals("foo",db.getNodeById(1).getProperty("name"));
-        assertEquals("12",db.getNodeById(1).getProperty("age"));
-    }
-    @Test
-    public void testRunWithInputFileWithSpaceDelim() throws Exception {
-        createFile("in.csv", "name age", "foo 12");
-        assertCommand("import-cypher -d \" \" -i in.csv create (n {name:{name}, age:{age}}) return n.name as name",
-                "Query: create (n {name:{name}, age:{age}}) return n.name as name infile in.csv delim ' ' quoted false outfile (none) batch-size 20000",
-                "Import statement execution created 1 rows of output.");
-        assertEquals("foo",db.getNodeById(1).getProperty("name"));
-        assertEquals("12",db.getNodeById(1).getProperty("age"));
-    }
-    @Test
     public void testRunWithInputAndOutputFile() throws Exception {
         String[] data = {"name", "foo", "bar"};
         createFile("in.csv", data);
@@ -80,6 +62,26 @@ public class ImportCypherAppTest {
         assertFile(data);
         assertEquals("foo",db.getNodeById(1).getProperty("name"));
         assertEquals("bar",db.getNodeById(2).getProperty("name"));
+    }
+
+    @Test
+    public void testRunWithInputFileWithTabDelim() throws Exception {
+        createFile("in.csv", "name\tage", "foo\t12");
+        assertCommand("import-cypher -d \"\\t\" -i in.csv create (n {name:{name}, age:{age}}) return n.name as name",
+            "Query: create (n {name:{name}, age:{age}}) return n.name as name infile in.csv delim '\t' quoted false outfile (none) batch-size 20000",
+            "Import statement execution created 1 rows of output.");
+        assertEquals("foo",db.getNodeById(1).getProperty("name"));
+        assertEquals("12",db.getNodeById(1).getProperty("age"));
+    }
+
+    @Test
+    public void testRunWithInputFileWithSpaceDelim() throws Exception {
+        createFile("in.csv", "name age", "foo 12");
+        assertCommand("import-cypher -d \" \" -i in.csv create (n {name:{name}, age:{age}}) return n.name as name",
+            "Query: create (n {name:{name}, age:{age}}) return n.name as name infile in.csv delim ' ' quoted false outfile (none) batch-size 20000",
+            "Import statement execution created 1 rows of output.");
+        assertEquals("foo",db.getNodeById(1).getProperty("name"));
+        assertEquals("12",db.getNodeById(1).getProperty("age"));
     }
 
     private void createFile(String fileName, String...rows) throws IOException {
@@ -117,6 +119,7 @@ public class ImportCypherAppTest {
     private String readFile(File file) throws FileNotFoundException {
         return new Scanner(file).useDelimiter("\\z").next();
     }
+
 
     private void assertCommand(String command, String...expected) throws RemoteException, ShellException {
         CollectingOutput out = new CollectingOutput();

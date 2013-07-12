@@ -48,6 +48,7 @@ public class ImportCypherApp extends GraphDatabaseApp {
         return "import-cypher";
     }
 
+
     @Override
     protected Continuation exec(AppCommandParser parser, Session session, Output out) throws Exception {
         char delim = delim(parser.option("d", ","));
