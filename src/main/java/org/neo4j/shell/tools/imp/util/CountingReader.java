@@ -14,6 +14,10 @@ public class CountingReader extends FilterReader implements SizeCounter {
         super(new BufferedReader(new FileReader(file), BUFFER_SIZE));
         this.total = file.length();
     }
+    public CountingReader(Reader reader, long total) throws FileNotFoundException {
+        super(new BufferedReader(reader, BUFFER_SIZE));
+        this.total = total;
+    }
 
     @Override
     public int read(char[] cbuf, int off, int len) throws IOException {
@@ -32,6 +36,7 @@ public class CountingReader extends FilterReader implements SizeCounter {
 
     @Override
     public long getPercent() {
-        return getCount()*100 / getTotal();
+        if (total <= 0) return 0;
+        return count*100 / total;
     }
 }

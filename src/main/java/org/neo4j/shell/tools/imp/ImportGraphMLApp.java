@@ -36,12 +36,13 @@ public class ImportGraphMLApp extends GraphDatabaseApp {
 
     @Override
     protected Continuation exec(AppCommandParser parser, Session session, Output out) throws Exception {
-        File file = fileFor(parser, "i");
+        String fileName = parser.option("i", null);
+        CountingReader file = FileUtils.readerFor(fileName);
         int batchSize = Integer.parseInt(parser.option("b", String.valueOf(DEFAULT_BATCH_SIZE)));
         String relType = parser.option("t", DEFAULT_REL_TYPE);
         boolean diskSpillCache = parser.options().containsKey("c");
         if (file != null) {
-            out.println(String.format("GraphML-Import file %s rel-type %s batch-size %d use disk-cache %s",file.getAbsoluteFile(),relType,batchSize,diskSpillCache));
+            out.println(String.format("GraphML-Import file %s rel-type %s batch-size %d use disk-cache %s",fileName,relType,batchSize,diskSpillCache));
             long count = execute(file, batchSize, relType, diskSpillCache, out);
             out.println("GraphML import created " + count + " entities.");
         }
@@ -56,8 +57,7 @@ public class ImportGraphMLApp extends GraphDatabaseApp {
         return null;
     }
 
-    private long execute(File file, int batchSize, String relType, boolean diskSpillCache, Output out) throws XMLStreamException, IOException {
-        CountingReader reader = new CountingReader(file);
+    private long execute(CountingReader reader, int batchSize, String relType, boolean diskSpillCache, Output out) throws XMLStreamException, IOException {
         try {
             GraphDatabaseAPI db = getServer().getDb();
             ProgressReporter reporter = new ProgressReporter(reader, out);

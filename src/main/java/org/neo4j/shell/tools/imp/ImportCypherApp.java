@@ -9,6 +9,8 @@ import org.neo4j.helpers.collection.IteratorUtil;
 import org.neo4j.kernel.impl.util.StringLogger;
 import org.neo4j.shell.*;
 import org.neo4j.shell.kernel.apps.GraphDatabaseApp;
+import org.neo4j.shell.tools.imp.util.CountingReader;
+import org.neo4j.shell.tools.imp.util.FileUtils;
 
 import java.io.*;
 import java.util.HashMap;
@@ -54,12 +56,13 @@ public class ImportCypherApp extends GraphDatabaseApp {
         char delim = delim(parser.option("d", ","));
         int batchSize = Integer.parseInt(parser.option("b", String.valueOf(DEFAULT_BATCH_SIZE)));
         boolean quotes = parser.options().containsKey("q");
-        File inputFile = fileFor(parser, "i");
+        String inputFileName = parser.option("i", null);
+        CountingReader inputFile = FileUtils.readerFor(inputFileName);
         File outputFile = fileFor(parser, "o");
         String query = extractQuery(parser);
 
         out.println(String.format("Query: %s infile %s delim '%s' quoted %s outfile %s batch-size %d",
-                                   query,name(inputFile),delim,quotes,name(outputFile),batchSize));
+                                   query,name(inputFileName),delim,quotes,name(outputFile),batchSize));
 
         CSVReader reader = createReader(inputFile, delim, quotes);
 
@@ -77,9 +80,9 @@ public class ImportCypherApp extends GraphDatabaseApp {
         return Continuation.INPUT_COMPLETE;
     }
 
-    private String name(File file) {
+    private String name(Object file) {
         if (file==null) return "(none)";
-        return file.getName();
+        return file.toString();
     }
 
     private char delim(String value) {
@@ -108,9 +111,8 @@ public class ImportCypherApp extends GraphDatabaseApp {
         return quotes ? new CSVWriter(file,delim, QUOTECHAR) : new CSVWriter(file,delim);
     }
 
-    private CSVReader createReader(File inputFile, char delim, boolean quotes) throws FileNotFoundException {
-        if (inputFile==null) return null;
-        FileReader reader = new FileReader(inputFile);
+    private CSVReader createReader(CountingReader reader, char delim, boolean quotes) throws FileNotFoundException {
+        if (reader==null) return null;
         return quotes ? new CSVReader(reader,delim, QUOTECHAR) : new CSVReader(reader,delim);
     }
 
