@@ -31,7 +31,7 @@ That assumes a default neo4j instance running on port 7474. You can call `./bin/
 Before importing data, use the [Auto Index](#setup-auto-indexing) command to set up indexing so that you'll be able to find the data afterwards.
 
 Then choose a suitable import command, depending on how your data is structured.
-* If your data is formatted as [cypher](http://docs.neo4j.org/chunked/milestone/cypher-query-lang.html) statements, use the [Cypher Import](#cypher-import) command.
+* If your data is formatted as CSV and you want to use [cypher](http://docs.neo4j.org/chunked/milestone/cypher-query-lang.html) statements for importing it, use the [Cypher Import](#cypher-import) command.
 * If your data is in [geoff](http://nigelsmall.com/geoff) format, use the [Geoff Import](#geoff-import) command.
 * If your data is in [GraphML](http://graphml.graphdrawing.org/) format, use the [GraphML Import](#graphml-import) command.
 
@@ -56,7 +56,7 @@ Populate your database with [write clauses](http://docs.neo4j.org/chunked/milest
 
 `import-cypher [-i in.csv] [-o out.csv] [-d ,] [-q] [-b 10000] create (n {name: {name}, age: {age}}) return id(n) as id, n.name as name`
 
-- -i file.csv: tab or comma separated input data file, with header. Header names are used as param-names. The cypher  statement will be executed one per row.
+- -i file.csv: tab or comma separated input data file (or URL), with header. Header names are used as param-names. The cypher  statement will be executed one per row
 - -o file.csv: tab or comma separated output data file, all cypher result rows will be written to file, column labels become headers
 - -q: input/output file with quotes
 - -d delim: delim used to separate files (e.g. `-d " ", -d \t -d ,` )
@@ -96,7 +96,7 @@ Populate your database with [geoff](http://nigelsmall.com/geoff) - a declarative
 
 `import-geoff [-g in.geoff]`
 
-- -g in.geoff: newline separated geoff rule file
+- -g in.geoff: newline separated geoff rule file (or URL)
 
 Example input file: in.geoff
 
@@ -119,7 +119,7 @@ Populate your database from [GraphML](http://graphml.graphdrawing.org/) files. G
 
 `import-graphml [-i in.xml] [-t REL_TYPE] [-b 20000] [-c]`
 
-- -i in.xml: graphml file
+- -i in.xml: graphml file (or URL)
 - -t REL_TYPE default relationship-type for relationships without a label attribute
 - -b batch-size batch-commit size
 - -c uses a cache that spills to disk for very large imports
