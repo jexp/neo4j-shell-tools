@@ -51,6 +51,14 @@ public class ImportCypherAppTest {
     }
 
     @Test
+    public void testRunWithInputFile2() throws Exception {
+        assertCommand(client, "import-cypher -d \"\\t\" -i import.csv create (n {name:{Trackmbid}}) return n.name as name",
+                "Query: create (n {name:{Trackmbid}}) return n.name as name infile import.csv delim '\t' quoted false outfile (none) batch-size 20000",
+                "Import statement execution created 9 rows of output.");
+        assertEquals("5151ffce-8617-443f-959a-82692c717cbf",db.getNodeById(1).getProperty("name"));
+    }
+
+    @Test
     public void testRunWithInputAndOutputFile() throws Exception {
         String[] data = {"name", "foo", "bar"};
         createFile("in.csv", data);

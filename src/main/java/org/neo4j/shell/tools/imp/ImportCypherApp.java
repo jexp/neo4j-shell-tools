@@ -13,6 +13,7 @@ import org.neo4j.shell.tools.imp.util.CountingReader;
 import org.neo4j.shell.tools.imp.util.FileUtils;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;

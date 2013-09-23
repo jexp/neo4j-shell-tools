@@ -19,7 +19,7 @@ public class FileUtils {
             return new CountingReader(reader,size);
         }
         File file = new File(fileName);
-        if (!file.exists() || !file.isFile() || !file.canRead()) return null;
+        if (!file.exists() || !file.isFile() || !file.canRead()) throw new IOException("Cannot open file "+fileName+" for reading.");
         return new CountingReader(file);
     }
 }
