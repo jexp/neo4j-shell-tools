@@ -4,7 +4,8 @@ import org.neo4j.geoff.Geoff;
 import org.neo4j.geoff.except.GeoffLoadException;
 import org.neo4j.graphdb.PropertyContainer;
 import org.neo4j.shell.*;
-import org.neo4j.shell.kernel.apps.GraphDatabaseApp;
+import org.neo4j.shell.impl.AbstractApp;
+import org.neo4j.shell.kernel.GraphDatabaseShellServer;
 import org.neo4j.shell.tools.imp.util.CountingReader;
 import org.neo4j.shell.tools.imp.util.FileUtils;
 
@@ -15,7 +16,7 @@ import java.util.Map;
 /**
  * Created by mh on 04.07.13.
  */
-public class ImportGeoffApp extends GraphDatabaseApp {
+public class ImportGeoffApp extends AbstractApp {
 
     {
         addOptionDefinition( "g", new OptionDefinition( OptionValueType.MUST,
@@ -28,7 +29,12 @@ public class ImportGeoffApp extends GraphDatabaseApp {
     }
 
     @Override
-    protected Continuation exec(AppCommandParser parser, Session session, Output out) throws Exception {
+    public GraphDatabaseShellServer getServer() {
+        return (GraphDatabaseShellServer) super.getServer();
+    }
+
+    @Override
+    public Continuation execute(AppCommandParser parser, Session session, Output out) throws Exception {
         String fileName = parser.option("g", null);
         CountingReader reader = FileUtils.readerFor(fileName);
 

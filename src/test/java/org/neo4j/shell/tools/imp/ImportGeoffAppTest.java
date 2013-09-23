@@ -2,6 +2,7 @@ package org.neo4j.shell.tools.imp;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.ShellException;
 import org.neo4j.shell.impl.CollectingOutput;
@@ -28,7 +29,10 @@ public class ImportGeoffAppTest {
     public void testRunWithInputFile() throws Exception {
         createFile("in.geoff", "(A) {\"name\": \"foo\"}");
         assertCommand("import-geoff -g in.geoff", "Geoff import of in.geoff created 1 entities.");
-        assertEquals("foo",db.getNodeById(1).getProperty("name"));
+        try (Transaction tx = db.beginTx()) {
+            assertEquals("foo",db.getNodeById(1).getProperty("name"));
+            tx.success();
+        }
     }
     @Test
     public void testRunWithMultiLineInputFile() throws Exception {
@@ -37,9 +41,12 @@ public class ImportGeoffAppTest {
                 "(B) {\"name\": \"Bob\"}",
                 "(A)-[r:KNOWS]->(B)");
         assertCommand("import-geoff -g in.geoff", "Geoff import of in.geoff created 3 entities.");
-        assertEquals("Alice",db.getNodeById(1).getProperty("name"));
-        assertEquals("Bob",db.getNodeById(2).getProperty("name"));
-        assertEquals("KNOWS",db.getRelationshipById(0).getType().name());
+        try (Transaction tx = db.beginTx()) {
+            assertEquals("Alice",db.getNodeById(1).getProperty("name"));
+            assertEquals("Bob",db.getNodeById(2).getProperty("name"));
+            assertEquals("KNOWS",db.getRelationshipById(0).getType().name());
+            tx.success();
+        }
     }
 
     private void createFile(String fileName, String...rows) throws IOException {
@@ -57,7 +64,7 @@ public class ImportGeoffAppTest {
     }
 
     @Before
-    public void setUp() throws RemoteException {
+    public void setUp() throws RemoteException, ShellException {
         db = (GraphDatabaseAPI) new TestGraphDatabaseFactory().newImpermanentDatabase();
         client = new SameJvmClient(Collections.<String, Serializable>emptyMap(), new GraphDatabaseShellServer(db));
     }

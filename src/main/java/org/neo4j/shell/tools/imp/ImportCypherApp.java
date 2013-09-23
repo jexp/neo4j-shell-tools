@@ -8,7 +8,8 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.helpers.collection.IteratorUtil;
 import org.neo4j.kernel.impl.util.StringLogger;
 import org.neo4j.shell.*;
-import org.neo4j.shell.kernel.apps.GraphDatabaseApp;
+import org.neo4j.shell.impl.AbstractApp;
+import org.neo4j.shell.kernel.GraphDatabaseShellServer;
 import org.neo4j.shell.tools.imp.util.CountingReader;
 import org.neo4j.shell.tools.imp.util.FileUtils;
 
@@ -21,7 +22,7 @@ import java.util.Map;
 /**
  * Created by mh on 04.07.13.
  */
-public class ImportCypherApp extends GraphDatabaseApp {
+public class ImportCypherApp extends AbstractApp {
 
     public static final char QUOTECHAR = '"';
     public static final int DEFAULT_BATCH_SIZE = 20000;
@@ -53,7 +54,12 @@ public class ImportCypherApp extends GraphDatabaseApp {
 
 
     @Override
-    protected Continuation exec(AppCommandParser parser, Session session, Output out) throws Exception {
+    public GraphDatabaseShellServer getServer() {
+        return (GraphDatabaseShellServer) super.getServer();
+    }
+
+    @Override
+    public Continuation execute(AppCommandParser parser, Session session, Output out) throws Exception {
         char delim = delim(parser.option("d", ","));
         int batchSize = Integer.parseInt(parser.option("b", String.valueOf(DEFAULT_BATCH_SIZE)));
         boolean quotes = parser.options().containsKey("q");

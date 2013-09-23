@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.shell.tools.imp.util.GraphMLReader;
 import org.neo4j.shell.tools.imp.util.MapNodeCache;
 import org.neo4j.test.TestGraphDatabaseFactory;
@@ -46,11 +47,14 @@ public class GraphMLReaderTest {
     @Test
     public void testReadSimpleFile() throws Exception {
         graphMLReader.parseXML(new StringReader(SIMPLE_GRAPHML), MapNodeCache.usingHashMap());
-        assertNode(gdb.getNodeById(1), "n0");
-        assertNode(gdb.getNodeById(2), "n1");
-        assertNode(gdb.getNodeById(3), "n2");
-        assertRel(0, "n0", "n2");
-        assertRel(1, "n1", "n2");
+        try (Transaction tx = gdb.beginTx()) {
+            assertNode(gdb.getNodeById(1), "n0");
+            assertNode(gdb.getNodeById(2), "n1");
+            assertNode(gdb.getNodeById(3), "n2");
+            assertRel(0, "n0", "n2");
+            assertRel(1, "n1", "n2");
+            tx.success();
+        }
     }
 
     @Test
@@ -58,16 +62,19 @@ public class GraphMLReaderTest {
         InputStream stream = getClass().getResourceAsStream("/graphml-with-attributes.xml");
         try {
             graphMLReader.parseXML(new InputStreamReader(stream),MapNodeCache.usingHashMap());
-            assertNode(gdb.getNodeById(1), "n0", "green");
-            assertNode(gdb.getNodeById(2), "n1", "yellow");
-            assertNode(gdb.getNodeById(3), "n2","blue");
-            assertNode(gdb.getNodeById(4), "n3", "red");
-            assertNode(gdb.getNodeById(5), "n4", "yellow");
-            assertRel(0, "n0", "n2", 1.0);
-            assertRel(1, "n0", "n1", 1.0);
-            assertRel(2,"n1","n3",2.0);
-            assertRel(3,"n3","n2",-1);
-            assertRel(6,"n5","n4",1.1);
+            try (Transaction tx = gdb.beginTx()) {
+                assertNode(gdb.getNodeById(1), "n0", "green");
+                assertNode(gdb.getNodeById(2), "n1", "yellow");
+                assertNode(gdb.getNodeById(3), "n2","blue");
+                assertNode(gdb.getNodeById(4), "n3", "red");
+                assertNode(gdb.getNodeById(5), "n4", "yellow");
+                assertRel(0, "n0", "n2", 1.0);
+                assertRel(1, "n0", "n1", 1.0);
+                assertRel(2,"n1","n3",2.0);
+                assertRel(3,"n3","n2",-1);
+                assertRel(6,"n5","n4",1.1);
+                tx.success();
+            }
         } finally {
             if (stream!=null) stream.close();
         }

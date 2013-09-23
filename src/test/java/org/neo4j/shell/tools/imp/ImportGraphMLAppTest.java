@@ -2,6 +2,7 @@ package org.neo4j.shell.tools.imp;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.ShellException;
 import org.neo4j.shell.impl.SameJvmClient;
@@ -40,13 +41,16 @@ public class ImportGraphMLAppTest {
                 "GraphML-Import file "+path+" rel-type UNKNOWN batch-size 20000 use disk-cache true",
                 "", "",
                 "GraphML import created 13 entities.");
-        assertEquals("green", db.getNodeById(1).getProperty("color"));
-        assertEquals(1.0, db.getRelationshipById(0).getProperty("weight"));
-        assertEquals("UNKNOWN", db.getRelationshipById(0).getType().name());
+        try (Transaction tx = db.beginTx()) {
+            assertEquals("green", db.getNodeById(1).getProperty("color"));
+            assertEquals(1.0, db.getRelationshipById(0).getProperty("weight"));
+            assertEquals("UNKNOWN", db.getRelationshipById(0).getType().name());
+            tx.success();
+        }
     }
 
     @Before
-    public void setUp() throws RemoteException {
+    public void setUp() throws RemoteException, ShellException {
         db = (GraphDatabaseAPI) new TestGraphDatabaseFactory().newImpermanentDatabase();
         client = new SameJvmClient(Collections.<String, Serializable>emptyMap(), new GraphDatabaseShellServer(db));
     }

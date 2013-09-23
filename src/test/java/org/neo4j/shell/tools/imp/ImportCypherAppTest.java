@@ -3,7 +3,9 @@ package org.neo4j.shell.tools.imp;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.kernel.GraphDatabaseAPI;
+import org.neo4j.shell.ShellException;
 import org.neo4j.shell.impl.SameJvmClient;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
 import org.neo4j.test.TestGraphDatabaseFactory;
@@ -38,7 +40,10 @@ public class ImportCypherAppTest {
                 "Query: create n return id(n) as id infile (none) delim ',' quoted false outfile out.csv batch-size 20000"
                 , "Import statement execution created 1 rows of output.");
         assertFile("id", "1");
-        assertNotNull(db.getNodeById(1));
+        try (Transaction tx = db.beginTx()) {
+            assertNotNull(db.getNodeById(1));
+            tx.success();
+        }
     }
 
     @Test
@@ -47,7 +52,10 @@ public class ImportCypherAppTest {
         assertCommand(client, "import-cypher -i in.csv create (n {name:{name}}) return n.name as name",
                 "Query: create (n {name:{name}}) return n.name as name infile in.csv delim ',' quoted false outfile (none) batch-size 20000",
                 "Import statement execution created 1 rows of output.");
-        assertEquals("foo",db.getNodeById(1).getProperty("name"));
+        try (Transaction tx = db.beginTx()) {
+            assertEquals("foo",db.getNodeById(1).getProperty("name"));
+            tx.success();
+        }
     }
 
     @Test
@@ -55,7 +63,10 @@ public class ImportCypherAppTest {
         assertCommand(client, "import-cypher -d \"\\t\" -i import.csv create (n {name:{Trackmbid}}) return n.name as name",
                 "Query: create (n {name:{Trackmbid}}) return n.name as name infile import.csv delim '\t' quoted false outfile (none) batch-size 20000",
                 "Import statement execution created 9 rows of output.");
-        assertEquals("5151ffce-8617-443f-959a-82692c717cbf",db.getNodeById(1).getProperty("name"));
+        try (Transaction tx = db.beginTx()) {
+            assertEquals("5151ffce-8617-443f-959a-82692c717cbf",db.getNodeById(1).getProperty("name"));
+            tx.success();
+        }
     }
 
     @Test
@@ -66,8 +77,11 @@ public class ImportCypherAppTest {
                 "Query: create (n {name:{name}}) return n.name as name infile in.csv delim ',' quoted false outfile out.csv batch-size 20000",
                 "Import statement execution created 2 rows of output.");
         assertFile(data);
-        assertEquals("foo",db.getNodeById(1).getProperty("name"));
-        assertEquals("bar",db.getNodeById(2).getProperty("name"));
+        try (Transaction tx = db.beginTx()) {
+            assertEquals("foo",db.getNodeById(1).getProperty("name"));
+            assertEquals("bar",db.getNodeById(2).getProperty("name"));
+            tx.success();
+        }
     }
 
     @Test
@@ -76,8 +90,11 @@ public class ImportCypherAppTest {
         assertCommand(client,"import-cypher -d \"\\t\" -i in.csv create (n {name:{name}, age:{age}}) return n.name as name",
             "Query: create (n {name:{name}, age:{age}}) return n.name as name infile in.csv delim '\t' quoted false outfile (none) batch-size 20000",
             "Import statement execution created 1 rows of output.");
-        assertEquals("foo",db.getNodeById(1).getProperty("name"));
-        assertEquals("12",db.getNodeById(1).getProperty("age"));
+        try (Transaction tx = db.beginTx()) {
+            assertEquals("foo",db.getNodeById(1).getProperty("name"));
+            assertEquals("12",db.getNodeById(1).getProperty("age"));
+            tx.success();
+        }
     }
 
     @Test
@@ -86,8 +103,11 @@ public class ImportCypherAppTest {
         assertCommand(client,"import-cypher -d \" \" -i in.csv create (n {name:{name}, age:{age}}) return n.name as name",
             "Query: create (n {name:{name}, age:{age}}) return n.name as name infile in.csv delim ' ' quoted false outfile (none) batch-size 20000",
             "Import statement execution created 1 rows of output.");
-        assertEquals("foo",db.getNodeById(1).getProperty("name"));
-        assertEquals("12",db.getNodeById(1).getProperty("age"));
+        try (Transaction tx = db.beginTx()) {
+            assertEquals("foo",db.getNodeById(1).getProperty("name"));
+            assertEquals("12",db.getNodeById(1).getProperty("age"));
+            tx.success();
+        }
     }
 
     @Test
@@ -98,8 +118,11 @@ public class ImportCypherAppTest {
         assertCommand(client, "import-cypher -d \"\\t\" -i " + url + " create (n {name:{name}, age:{age}}) return n.name as name",
                 "Query: create (n {name:{name}, age:{age}}) return n.name as name infile " + url + " delim '\t' quoted false outfile (none) batch-size 20000",
                 "Import statement execution created 1 rows of output.");
-        assertEquals("foo",db.getNodeById(1).getProperty("name"));
-        assertEquals("12",db.getNodeById(1).getProperty("age"));
+        try (Transaction tx = db.beginTx()) {
+            assertEquals("foo",db.getNodeById(1).getProperty("name"));
+            assertEquals("12",db.getNodeById(1).getProperty("age"));
+            tx.success();
+        }
     }
 
     private void createFile(String fileName, String...rows) throws IOException {
@@ -116,8 +139,11 @@ public class ImportCypherAppTest {
                 "Query: start x=node(0,0) create n return id(n) as id infile (none) delim ',' quoted false outfile out.csv batch-size 20000",
                 "Import statement execution created 2 rows of output.");
         assertFile("id","1","2");
-        assertNotNull(db.getNodeById(1));
-        assertNotNull(db.getNodeById(2));
+        try (Transaction tx = db.beginTx()) {
+            assertNotNull(db.getNodeById(1));
+            assertNotNull(db.getNodeById(2));
+            tx.success();
+        }
     }
 
     private void assertFile(String...expected) throws FileNotFoundException {
@@ -139,7 +165,7 @@ public class ImportCypherAppTest {
     }
 
     @Before
-    public void setUp() throws RemoteException {
+    public void setUp() throws RemoteException, ShellException {
         db = (GraphDatabaseAPI) new TestGraphDatabaseFactory().newImpermanentDatabase();
         client = new SameJvmClient(Collections.<String, Serializable>emptyMap(), new GraphDatabaseShellServer(db));
     }

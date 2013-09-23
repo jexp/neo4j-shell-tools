@@ -73,7 +73,7 @@ public class AutoIndexAppTest {
     }
 
     @Before
-    public void setUp() throws RemoteException {
+    public void setUp() throws RemoteException, ShellException {
         db = (GraphDatabaseAPI) new TestGraphDatabaseFactory().newImpermanentDatabase();
         client = new SameJvmClient(Collections.<String, Serializable>emptyMap(), new GraphDatabaseShellServer(db));
         nodeAutoIndexer = db.index().getNodeAutoIndexer();

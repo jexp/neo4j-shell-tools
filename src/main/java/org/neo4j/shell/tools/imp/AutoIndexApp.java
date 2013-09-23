@@ -4,12 +4,12 @@ import org.neo4j.graphdb.PropertyContainer;
 import org.neo4j.graphdb.index.AutoIndexer;
 import org.neo4j.graphdb.index.IndexManager;
 import org.neo4j.shell.*;
-import org.neo4j.shell.kernel.apps.GraphDatabaseApp;
+import org.neo4j.shell.kernel.apps.TransactionProvidingApp;
 
 /**
  * Created by mh on 04.07.13.
  */
-public class AutoIndexApp extends GraphDatabaseApp {
+public class AutoIndexApp extends TransactionProvidingApp {
 
     {
         addOptionDefinition( "t", new OptionDefinition( OptionValueType.MUST,

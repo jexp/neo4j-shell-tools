@@ -2,7 +2,9 @@ package org.neo4j.shell.tools.imp;
 
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.*;
-import org.neo4j.shell.kernel.apps.GraphDatabaseApp;
+import org.neo4j.shell.impl.AbstractApp;
+import org.neo4j.shell.kernel.GraphDatabaseShellServer;
+import org.neo4j.shell.kernel.apps.TransactionProvidingApp;
 import org.neo4j.shell.tools.imp.util.*;
 
 import javax.xml.stream.XMLStreamException;
@@ -12,7 +14,7 @@ import java.io.IOException;
 /**
  * Created by mh on 04.07.13.
  */
-public class ImportGraphMLApp extends GraphDatabaseApp {
+public class ImportGraphMLApp extends AbstractApp {
 
     private static final int DEFAULT_BATCH_SIZE = 40000;
 
@@ -35,7 +37,12 @@ public class ImportGraphMLApp extends GraphDatabaseApp {
     }
 
     @Override
-    protected Continuation exec(AppCommandParser parser, Session session, Output out) throws Exception {
+    public GraphDatabaseShellServer getServer() {
+        return (GraphDatabaseShellServer) super.getServer();
+    }
+
+    @Override
+    public Continuation execute(AppCommandParser parser, Session session, Output out) throws Exception {
         String fileName = parser.option("i", null);
         CountingReader file = FileUtils.readerFor(fileName);
         int batchSize = Integer.parseInt(parser.option("b", String.valueOf(DEFAULT_BATCH_SIZE)));
