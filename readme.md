@@ -188,7 +188,7 @@ mvn clean package dependency:copy-dependencies
 Then copy the jars that get generated into the neo4j lib directory:
 
 ````
-cp target/import-tools-1.0-SNAPSHOT.jar target/dependency/opencsv-2.3.jar target/dependency/neo4j-geoff-1.7-SNAPSHOT.jar target/dependency/mapdb-0.9.3.jar /path/to/neo4j-community-1.9/lib
+cp target/import-tools-2.0-SNAPSHOT.jar target/dependency/opencsv-2.3.jar target/dependency/neo4j-geoff-1.7-SNAPSHOT.jar target/dependency/mapdb-0.9.3.jar /path/to/neo4j-community-2.0.0-M05/lib
 ````
 
 or make those two files available on your neo4j-shell classpath
