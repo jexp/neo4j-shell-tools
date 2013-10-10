@@ -119,6 +119,7 @@ public class GraphMLReader {
 
     public long parseXML(Reader input, NodeCache cache) throws XMLStreamException {
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+        inputFactory.setProperty("javax.xml.stream.isCoalescing", true);
         XMLEventReader reader = inputFactory.createXMLEventReader(input);
         PropertyContainer last = null;
         Map<String, Key> nodeKeys = new HashMap<String, Key>();

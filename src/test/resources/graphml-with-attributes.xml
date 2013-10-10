@@ -20,7 +20,7 @@
         </node>
         <node id="n4"/>
         <node id="n5">
-            <data key="d0">turquoise</data>
+            <data key="d0">tur&amp;uoise</data>
         </node>
         <edge id="e0" source="n0" target="n2">
             <data key="d1">1.0</data>
