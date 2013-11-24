@@ -48,9 +48,9 @@ public class GraphMLReaderTest {
     public void testReadSimpleFile() throws Exception {
         graphMLReader.parseXML(new StringReader(SIMPLE_GRAPHML), MapNodeCache.usingHashMap());
         try (Transaction tx = gdb.beginTx()) {
-            assertNode(gdb.getNodeById(1), "n0");
-            assertNode(gdb.getNodeById(2), "n1");
-            assertNode(gdb.getNodeById(3), "n2");
+            assertNode(gdb.getNodeById(0), "n0");
+            assertNode(gdb.getNodeById(1), "n1");
+            assertNode(gdb.getNodeById(2), "n2");
             assertRel(0, "n0", "n2");
             assertRel(1, "n1", "n2");
             tx.success();
@@ -63,11 +63,11 @@ public class GraphMLReaderTest {
         try {
             graphMLReader.parseXML(new InputStreamReader(stream),MapNodeCache.usingHashMap());
             try (Transaction tx = gdb.beginTx()) {
-                assertNode(gdb.getNodeById(1), "n0", "green");
-                assertNode(gdb.getNodeById(2), "n1", "yellow");
-                assertNode(gdb.getNodeById(3), "n2","blue");
-                assertNode(gdb.getNodeById(4), "n3", "red");
-                assertNode(gdb.getNodeById(5), "n4", "yellow");
+                assertNode(gdb.getNodeById(0), "n0", "green");
+                assertNode(gdb.getNodeById(1), "n1", "yellow");
+                assertNode(gdb.getNodeById(2), "n2","blue");
+                assertNode(gdb.getNodeById(3), "n3", "red");
+                assertNode(gdb.getNodeById(4), "n4", "yellow");
                 assertRel(0, "n0", "n2", 1.0);
                 assertRel(1, "n0", "n1", 1.0);
                 assertRel(2,"n1","n3",2.0);

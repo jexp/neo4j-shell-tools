@@ -30,7 +30,7 @@ public class ImportGeoffAppTest {
         createFile("in.geoff", "(A) {\"name\": \"foo\"}");
         assertCommand("import-geoff -g in.geoff", "Geoff import of in.geoff created 1 entities.");
         try (Transaction tx = db.beginTx()) {
-            assertEquals("foo",db.getNodeById(1).getProperty("name"));
+            assertEquals("foo",db.getNodeById(0).getProperty("name"));
             tx.success();
         }
     }
@@ -42,8 +42,8 @@ public class ImportGeoffAppTest {
                 "(A)-[r:KNOWS]->(B)");
         assertCommand("import-geoff -g in.geoff", "Geoff import of in.geoff created 3 entities.");
         try (Transaction tx = db.beginTx()) {
-            assertEquals("Alice",db.getNodeById(1).getProperty("name"));
-            assertEquals("Bob",db.getNodeById(2).getProperty("name"));
+            assertEquals("Alice",db.getNodeById(0).getProperty("name"));
+            assertEquals("Bob",db.getNodeById(1).getProperty("name"));
             assertEquals("KNOWS",db.getRelationshipById(0).getType().name());
             tx.success();
         }

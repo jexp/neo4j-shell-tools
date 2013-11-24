@@ -130,27 +130,47 @@ public class ImportCypherApp extends AbstractApp {
 
     private int executeOnInput(CSVReader reader, String query, CSVWriter writer, int batchSize) throws IOException {
         Map<String, Object> params = createParams(reader);
+        Map<String, String> replacements = computeReplacements(params, query);
         String[] input;
         boolean first = true;
         int outCount = 0, inCount = 0;
         Transaction tx = getServer().getDb().beginTx();
         try {
             while ((input = reader.readNext()) != null) {
-                ExecutionResult result = getEngine().execute(query, update(params, input));
+                Map<String, Object> queryParams = update(params, input);
+                String newQuery = applyReplacements(query, replacements, queryParams);
+                ExecutionResult result = getEngine().execute(newQuery, queryParams);
                 outCount += writeResult(result, writer, first);
                 first = false;
                 inCount++;
                 if (inCount % batchSize == 0) {
                     tx.success();
-                    tx.finish();
+                    tx.close();
                     tx = getServer().getDb().beginTx();
                 }
             }
             tx.success();
         } finally {
-            tx.finish();
+            tx.close();
         }
         return outCount;
+    }
+
+    private String applyReplacements(String query, Map<String, String> replacements, Map<String, Object> queryParams) {
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            Object value = queryParams.get(entry.getKey());
+            query = query.replace(entry.getValue(), String.valueOf(value));
+        }
+        return query;
+    }
+
+    private Map<String, String> computeReplacements(Map<String, Object> params, String query) {
+        Map<String, String> result = new HashMap<>();
+        for (String name : params.keySet()) {
+            String pattern = "#{" + name + "}";
+            if (query.contains(pattern)) result.put(name,pattern);
+        }
+        return result;
     }
 
     private int writeResult(ExecutionResult result, CSVWriter writer, boolean first) {

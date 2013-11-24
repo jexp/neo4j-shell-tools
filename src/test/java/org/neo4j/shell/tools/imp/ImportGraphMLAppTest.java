@@ -42,8 +42,8 @@ public class ImportGraphMLAppTest {
                 "", "",
                 "GraphML import created 13 entities.");
         try (Transaction tx = db.beginTx()) {
-            assertEquals("green", db.getNodeById(1).getProperty("color"));
-            assertEquals("tur&uoise", db.getNodeById(6).getProperty("color"));
+            assertEquals("green", db.getNodeById(0).getProperty("color"));
+            assertEquals("tur&uoise", db.getNodeById(5).getProperty("color"));
             assertEquals(1.0, db.getRelationshipById(0).getProperty("weight"));
             assertEquals("UNKNOWN", db.getRelationshipById(0).getType().name());
             tx.success();

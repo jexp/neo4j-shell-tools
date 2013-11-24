@@ -3,7 +3,9 @@ package org.neo4j.shell.tools.imp;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.helpers.collection.IteratorUtil;
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.ShellException;
 import org.neo4j.shell.impl.SameJvmClient;
@@ -54,6 +56,19 @@ public class ImportCypherAppTest {
                 "Import statement execution created 1 rows of output.");
         try (Transaction tx = db.beginTx()) {
             assertEquals("foo",db.getNodeById(1).getProperty("name"));
+            tx.success();
+        }
+    }
+    @Test
+    public void testRunWithInputFileAndReplacements() throws Exception {
+        createFile("in.csv", "name,type", "foo,Bar");
+        assertCommand(client, "import-cypher -i in.csv create (n:#{type} {name:{name}}) return n.name as name",
+                "Query: create (n:#{type} {name:{name}}) return n.name as name infile in.csv delim ',' quoted false outfile (none) batch-size 20000",
+                "Import statement execution created 1 rows of output.");
+        try (Transaction tx = db.beginTx()) {
+            Node node = db.getNodeById(1);
+            assertEquals("foo", node.getProperty("name"));
+            assertEquals("Bar", IteratorUtil.single(node.getLabels()).name());
             tx.success();
         }
     }
@@ -167,6 +182,10 @@ public class ImportCypherAppTest {
     @Before
     public void setUp() throws RemoteException, ShellException {
         db = (GraphDatabaseAPI) new TestGraphDatabaseFactory().newImpermanentDatabase();
+        try (Transaction tx = db.beginTx()) {
+            db.createNode();
+            tx.success();
+        }
         client = new SameJvmClient(Collections.<String, Serializable>emptyMap(), new GraphDatabaseShellServer(db));
     }
 }
