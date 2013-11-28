@@ -59,6 +59,20 @@ public class ImportCypherAppTest {
             tx.success();
         }
     }
+
+    @Test
+    public void testRunWithInputWithTypesFile() throws Exception {
+        createFile("in.csv", "name:string,age:int", "foo,42");
+        assertCommand(client, "import-cypher -i in.csv create (n {name:{name}, age: {age}}) return n.name as name",
+                "Query: create (n {name:{name}, age: {age}}) return n.name as name infile in.csv delim ',' quoted false outfile (none) batch-size 20000",
+                "Import statement execution created 1 rows of output.");
+        try (Transaction tx = db.beginTx()) {
+            Node node = db.getNodeById(1);
+            assertEquals("foo", node.getProperty("name"));
+            assertEquals(42, node.getProperty("age"));
+            tx.success();
+        }
+    }
     @Test
     public void testRunWithInputFileAndReplacements() throws Exception {
         createFile("in.csv", "name,type", "foo,Bar");
