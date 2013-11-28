@@ -11,9 +11,9 @@ import org.neo4j.shell.*;
 import org.neo4j.shell.kernel.apps.GraphDatabaseApp;
 import org.neo4j.shell.tools.imp.util.CountingReader;
 import org.neo4j.shell.tools.imp.util.FileUtils;
+import org.neo4j.shell.tools.imp.util.Type;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -124,13 +124,17 @@ public class ImportCypherApp extends GraphDatabaseApp {
 
     private int executeOnInput(CSVReader reader, String query, CSVWriter writer, int batchSize) throws IOException {
         Map<String, Object> params = createParams(reader);
+        Map<String, Type> types = extractTypes(params);
+        Map<String, String> replacements = computeReplacements(params, query);
         String[] input;
         boolean first = true;
         int outCount = 0, inCount = 0;
         Transaction tx = getServer().getDb().beginTx();
         try {
             while ((input = reader.readNext()) != null) {
-                ExecutionResult result = getEngine().execute(query, update(params, input));
+                Map<String, Object> queryParams = update(params, types, input);
+                String newQuery = applyReplacements(query, replacements, queryParams);
+                ExecutionResult result = getEngine().execute(newQuery, queryParams);
                 outCount += writeResult(result, writer, first);
                 first = false;
                 inCount++;
@@ -145,6 +149,41 @@ public class ImportCypherApp extends GraphDatabaseApp {
             tx.finish();
         }
         return outCount;
+    }
+
+    private Map<String, Type> extractTypes(Map<String, Object> params) {
+        Map<String,Object> newParams = new LinkedHashMap<String, Object>();
+        Map<String,Type> types = new LinkedHashMap<String, Type>();
+        for (String header : params.keySet()) {
+            if (header.contains(":")) {
+                String[] parts = header.split(":");
+                newParams.put(parts[0],null);
+                types.put(parts[0],Type.fromString(parts[1]));
+            } else {
+                newParams.put(header,null);
+                types.put(header,Type.STRING);
+            }
+        }
+        params.clear();
+        params.putAll(newParams);
+        return types;
+    }
+
+    private String applyReplacements(String query, Map<String, String> replacements, Map<String, Object> queryParams) {
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            Object value = queryParams.get(entry.getKey());
+            query = query.replace(entry.getValue(), String.valueOf(value));
+        }
+        return query;
+    }
+
+    private Map<String, String> computeReplacements(Map<String, Object> params, String query) {
+        Map<String, String> result = new HashMap<String, String>();
+        for (String name : params.keySet()) {
+            String pattern = "#{" + name + "}";
+            if (query.contains(pattern)) result.put(name,pattern);
+        }
+        return result;
     }
 
     private int writeResult(ExecutionResult result, CSVWriter writer, boolean first) {
@@ -181,10 +220,12 @@ public class ImportCypherApp extends GraphDatabaseApp {
         return params;
     }
 
-    private Map<String, Object> update(Map<String, Object> params, String[] input) {
+    private Map<String, Object> update(Map<String, Object> params, Map<String, Type> types, String[] input) {
         int col=0;
         for (Map.Entry<String, Object> param : params.entrySet()) {
-            param.setValue(input[col++]);
+            Type type = types.get(param.getKey());
+            Object value = type.convert(input[col++]);
+            param.setValue(value);
         }
         return params;
     }

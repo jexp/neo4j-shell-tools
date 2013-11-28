@@ -90,6 +90,19 @@ id	name
 4	Selma
 ````
 
+Optionally support types for column headers: just use `prop:type` as header in your csv, e.g. `name:string,age:int`
+
+Supported Types
+
+* int
+* long
+* double
+* float
+* boolean
+* string
+* byte
+* and arrays thereof with <type>_array, e.g. int_array
+
 #### Geoff Import
 
 Populate your database with [geoff](http://nigelsmall.com/geoff) - a declarative notation for representing graph data in a human-readable format.

@@ -3,6 +3,8 @@ package org.neo4j.shell.tools.imp;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.neo4j.graphdb.DynamicRelationshipType;
+import org.neo4j.graphdb.Node;
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.impl.SameJvmClient;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
@@ -48,6 +50,27 @@ public class ImportCypherAppTest {
                 "Query: create (n {name:{name}}) return n.name as name infile in.csv delim ',' quoted false outfile (none) batch-size 20000",
                 "Import statement execution created 1 rows of output.");
         assertEquals("foo",db.getNodeById(1).getProperty("name"));
+    }
+
+    @Test
+    public void testRunWithInputWithTypesFile() throws Exception {
+        createFile("in.csv", "name:string,age:int", "foo,42");
+        assertCommand(client, "import-cypher -i in.csv create (n {name:{name}, age: {age}}) return n.name as name",
+                "Query: create (n {name:{name}, age: {age}}) return n.name as name infile in.csv delim ',' quoted false outfile (none) batch-size 20000",
+                "Import statement execution created 1 rows of output.");
+        Node node = db.getNodeById(1);
+        assertEquals("foo", node.getProperty("name"));
+        assertEquals(42, node.getProperty("age"));
+    }
+    @Test
+    public void testRunWithInputFileAndReplacements() throws Exception {
+        createFile("in.csv", "name,type", "foo,BAR");
+        assertCommand(client, "import-cypher -i in.csv create (n {name:{name}})-[:#{type}]->(n) return n.name as name",
+                "Query: create (n {name:{name}})-[:#{type}]->(n) return n.name as name infile in.csv delim ',' quoted false outfile (none) batch-size 20000",
+                "Import statement execution created 1 rows of output.");
+        Node node = db.getNodeById(1);
+        assertEquals("foo", node.getProperty("name"));
+        assertEquals(true, node.hasRelationship(DynamicRelationshipType.withName("BAR")));
     }
 
     @Test
