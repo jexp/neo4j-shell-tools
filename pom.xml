@@ -44,9 +44,9 @@
             <version>2.3</version>
         </dependency>
         <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-geoff</artifactId>
-            <version>1.7-SNAPSHOT</version>
+            <groupId>com.nigelsmall</groupId>
+            <artifactId>geoff</artifactId>
+            <version>0.5.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.neo4j</groupId>

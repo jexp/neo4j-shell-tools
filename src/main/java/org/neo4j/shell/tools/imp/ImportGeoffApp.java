@@ -1,16 +1,20 @@
 package org.neo4j.shell.tools.imp;
 
-import org.neo4j.geoff.Geoff;
-import org.neo4j.geoff.except.GeoffLoadException;
-import org.neo4j.graphdb.PropertyContainer;
+import com.nigelsmall.geoff.Subgraph;
+import com.nigelsmall.geoff.loader.NeoLoader;
+import com.nigelsmall.geoff.reader.GeoffReader;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Transaction;
+import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
 import org.neo4j.shell.tools.imp.util.CountingReader;
 import org.neo4j.shell.tools.imp.util.FileUtils;
 
-import java.io.*;
-import java.util.Collections;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Map;
 
 /**
@@ -46,8 +50,14 @@ public class ImportGeoffApp extends AbstractApp {
         return Continuation.INPUT_COMPLETE;
     }
 
-    private int execute(Reader reader) throws GeoffLoadException, IOException {
-        Map<String, PropertyContainer> result = Geoff.loadIntoNeo4j(reader, getServer().getDb(), Collections.<String, PropertyContainer>emptyMap());
-        return result.size();
+    private int execute(Reader reader) throws   IOException {
+        GraphDatabaseService db = getServer().getDb();
+        try (Transaction tx = db.beginTx())  {
+            NeoLoader loader = new NeoLoader(db);
+            Subgraph subgraph = new GeoffReader(reader).readSubgraph();
+            Map<String, Node> result = loader.load(subgraph);
+            tx.success();
+            return result.size();
+        }
     }
 }
