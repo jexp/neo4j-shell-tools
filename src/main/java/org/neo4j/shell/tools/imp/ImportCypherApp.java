@@ -22,7 +22,8 @@ import java.util.Map;
 public class ImportCypherApp extends AbstractApp {
 
     public static final char QUOTECHAR = '"';
-    public static final int DEFAULT_BATCH_SIZE = 20000;
+//    public static final int DEFAULT_BATCH_SIZE = 20000;
+    public static final int DEFAULT_BATCH_SIZE = 1000; // work around cypher bug
 
     private ExecutionEngine engine;
 
