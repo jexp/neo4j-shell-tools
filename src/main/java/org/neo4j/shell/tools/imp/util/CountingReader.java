@@ -26,6 +26,18 @@ public class CountingReader extends FilterReader implements SizeCounter {
         return read;
     }
 
+    @Override
+    public int read() throws IOException {
+        count++;
+        return super.read();
+    }
+
+    @Override
+    public long skip(long n) throws IOException {
+        count += n;
+        return super.skip(n);
+    }
+
     public long getCount() {
         return count;
     }

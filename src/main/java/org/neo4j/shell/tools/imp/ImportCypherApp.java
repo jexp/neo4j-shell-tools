@@ -4,18 +4,14 @@ import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 import org.neo4j.cypher.javacompat.ExecutionEngine;
 import org.neo4j.cypher.javacompat.ExecutionResult;
-import org.neo4j.graphdb.Transaction;
 import org.neo4j.helpers.collection.IteratorUtil;
 import org.neo4j.kernel.impl.util.StringLogger;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
-import org.neo4j.shell.tools.imp.util.CountingReader;
-import org.neo4j.shell.tools.imp.util.FileUtils;
-import org.neo4j.shell.tools.imp.util.Type;
+import org.neo4j.shell.tools.imp.util.*;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -80,7 +76,7 @@ public class ImportCypherApp extends AbstractApp {
         if (reader==null) {
             count = execute(query, writer);
         } else {
-            count = executeOnInput(reader, query, writer, batchSize);
+            count = executeOnInput(reader, query, writer, batchSize, new ProgressReporter(inputFile,out));
         }
         out.println("Import statement execution created "+count+" rows of output.");
         if (reader!=null) reader.close();
@@ -129,31 +125,24 @@ public class ImportCypherApp extends AbstractApp {
         return writeResult(result, writer,true);
     }
 
-    private int executeOnInput(CSVReader reader, String query, CSVWriter writer, int batchSize) throws IOException {
+
+    private int executeOnInput(CSVReader reader, String query, CSVWriter writer, int batchSize, ProgressReporter reporter) throws IOException {
         Map<String, Object> params = createParams(reader);
         Map<String, Type> types = extractTypes(params);
         Map<String, String> replacements = computeReplacements(params, query);
         String[] input;
         boolean first = true;
-        int outCount = 0, inCount = 0;
-        Transaction tx = getServer().getDb().beginTx();
-        try {
+        int outCount = 0;
+        try (BatchTransaction tx = new BatchTransaction(getServer().getDb(),batchSize,reporter)) {
             while ((input = reader.readNext()) != null) {
                 Map<String, Object> queryParams = update(params, types, input);
                 String newQuery = applyReplacements(query, replacements, queryParams);
                 ExecutionResult result = getEngine().execute(newQuery, queryParams);
                 outCount += writeResult(result, writer, first);
                 first = false;
-                inCount++;
-                if (inCount % batchSize == 0) {
-                    tx.success();
-                    tx.close();
-                    tx = getServer().getDb().beginTx();
-                }
+                reporter.update(result.getQueryStatistics());
+                tx.increment();
             }
-            tx.success();
-        } finally {
-            tx.close();
         }
         return outCount;
     }

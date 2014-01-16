@@ -3,6 +3,7 @@ package org.neo4j.shell.tools.imp;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.ShellException;
 import org.neo4j.shell.impl.CollectingOutput;
@@ -14,13 +15,13 @@ import java.io.*;
 import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
 /**
  * Created by mh on 04.07.13.
  */
-@Ignore
 public class ImportCypherPerformanceTest {
 
     public static final int ROWS = 1000000;
@@ -31,10 +32,14 @@ public class ImportCypherPerformanceTest {
     public void testRunWithInputFile() throws Exception {
         createFile("in.csv", "name", ROWS);
         long time = System.currentTimeMillis();
-        assertCommand("import -i in.csv create (n {name:{name}}) return n.name as name", "Import statement execution created "+ROWS+" rows of output.");
+        assertCommand("import-cypher -i in.csv create (n {name:{name}}) return n.name as name", "Import statement execution created "+ROWS+" rows of output.");
         long delta = System.currentTimeMillis() - time;
         System.out.println("delta = " + delta);
-        assertEquals(String.valueOf(ROWS), db.getNodeById(ROWS).getProperty("name"));
+        assertTrue("timeout 60s > "+delta,delta < TimeUnit.SECONDS.toMillis(60));
+        try (Transaction tx = db.beginTx()) {
+            assertEquals(String.valueOf(ROWS), db.getNodeById(ROWS-1).getProperty("name"));
+            tx.success();
+        }
     }
 
     private void createFile(String fileName, String col, int rows) throws IOException {
@@ -49,7 +54,8 @@ public class ImportCypherPerformanceTest {
     private void assertCommand(String command, String expected) throws RemoteException, ShellException {
         CollectingOutput out = new CollectingOutput();
         client.evaluate(command, out);
-        assertEquals(expected,out.asString().trim());
+        String output = out.asString();
+        assertEquals(output+"\n should contain: "+expected,true, output.contains(expected));
     }
 
     @Before

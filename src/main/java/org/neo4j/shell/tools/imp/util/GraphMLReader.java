@@ -122,81 +122,77 @@ public class GraphMLReader {
         inputFactory.setProperty("javax.xml.stream.isCoalescing", true);
         XMLEventReader reader = inputFactory.createXMLEventReader(input);
         PropertyContainer last = null;
-        Map<String, Key> nodeKeys = new HashMap<String, Key>();
-        Map<String, Key> relKeys = new HashMap<String, Key>();
-        long nodes=0;
-        long rels=0;
-        long properties=0;
-        Transaction tx = gdb.beginTx();
-        while (reader.hasNext()) {
-            XMLEvent event = (XMLEvent) reader.next();
-            if (event.isStartElement()) {
-                if (((nodes+rels+properties) % (batchSize*10)) == 1) {
-                    tx.success();tx.finish();
-                    tx = gdb.beginTx();
-                    if (reporter!=null) reporter.progress(nodes,rels,properties);
-                }
+        Map<String, Key> nodeKeys = new HashMap<>();
+        Map<String, Key> relKeys = new HashMap<>();
+        int count = 0;
+        try (BatchTransaction tx = new BatchTransaction(gdb, batchSize * 10, reporter)) {
 
-                StartElement element = event.asStartElement();
-                String name = element.getName().getLocalPart();
+            while (reader.hasNext()) {
+                XMLEvent event = (XMLEvent) reader.next();
+                if (event.isStartElement()) {
+                    tx.increment();
 
-                if (name.equals("graphml") || name.equals("graph")) continue;
-                if (name.equals("key")) {
-                    String id = getAttribute(element, ID);
-                    Key key = new Key(id, getAttribute(element, NAME), getAttribute(element, TYPE), getAttribute(element, FOR));
+                    StartElement element = event.asStartElement();
+                    String name = element.getName().getLocalPart();
 
-                    XMLEvent next = peek(reader);
-                    if (next.isStartElement() && next.asStartElement().getName().getLocalPart().equals("default")) {
-                        reader.nextEvent().asStartElement();
-                        key.setDefault(reader.nextEvent().asCharacters().getData());
+                    if (name.equals("graphml") || name.equals("graph")) continue;
+                    if (name.equals("key")) {
+                        String id = getAttribute(element, ID);
+                        Key key = new Key(id, getAttribute(element, NAME), getAttribute(element, TYPE), getAttribute(element, FOR));
+
+                        XMLEvent next = peek(reader);
+                        if (next.isStartElement() && next.asStartElement().getName().getLocalPart().equals("default")) {
+                            reader.nextEvent().asStartElement();
+                            key.setDefault(reader.nextEvent().asCharacters().getData());
+                        }
+                        if (key.forNode) nodeKeys.put(id, key);
+                        else relKeys.put(id, key);
+                        continue;
                     }
-                    if (key.forNode) nodeKeys.put(id, key);
-                    else relKeys.put(id, key);
-                    continue;
-                }
-                if (name.equals("data")) {
-                    if (last == null) continue;
-                    String id = getAttribute(element, KEY);
-                    Key key = last instanceof Node ? nodeKeys.get(id) : relKeys.get(id);
-                    Object value = key.defaultValue;
-                    XMLEvent next = peek(reader);
-                    if (next.isCharacters()) {
-                        value = key.parseValue(reader.nextEvent().asCharacters().getData());
+                    if (name.equals("data")) {
+                        if (last == null) continue;
+                        String id = getAttribute(element, KEY);
+                        Key key = last instanceof Node ? nodeKeys.get(id) : relKeys.get(id);
+                        Object value = key.defaultValue;
+                        XMLEvent next = peek(reader);
+                        if (next.isCharacters()) {
+                            value = key.parseValue(reader.nextEvent().asCharacters().getData());
+                        }
+                        if (value != null) {
+                            last.setProperty(key.name, value);
+                            if (reporter != null) reporter.update(0, 0, 1);
+                        }
+                        continue;
                     }
-                    if (value!=null) {
-                        last.setProperty(key.name, value);
-                        properties ++;
+                    if (name.equals("node")) {
+                        String id = getAttribute(element, ID);
+                        Node node = gdb.createNode();
+                        if (storeNodeIds) node.setProperty("id", id);
+                        setDefaults(nodeKeys, node);
+                        last = node;
+                        cache.put(id, node.getId());
+                        if (reporter != null) reporter.update(1, 0, 0);
+                        count++;
+                        continue;
                     }
-                    continue;
-                }
-                if (name.equals("node")) {
-                    String id = getAttribute(element, ID);
-                    Node node = gdb.createNode();
-                    if (storeNodeIds) node.setProperty("id",id);
-                    setDefaults(nodeKeys, node);
-                    last = node;
-                    cache.put(id, node.getId());
-                    nodes++;
-                    continue;
-                }
-                if (name.equals("edge")) {
-                    String source = getAttribute(element, SOURCE);
-                    String target = getAttribute(element, TARGET);
-                    String label = getAttribute(element, LABEL);
-                    Node from = gdb.getNodeById(cache.get(source));
-                    Node to = gdb.getNodeById(cache.get(target));
-                    RelationshipType type = label != null ? DynamicRelationshipType.withName(label) : defaultRelType;
-                    Relationship relationship = from.createRelationshipTo(to, type);
-                    setDefaults(relKeys,relationship);
-                    rels++;
-                    last = relationship;
-                    continue;
+                    if (name.equals("edge")) {
+                        String source = getAttribute(element, SOURCE);
+                        String target = getAttribute(element, TARGET);
+                        String label = getAttribute(element, LABEL);
+                        Node from = gdb.getNodeById(cache.get(source));
+                        Node to = gdb.getNodeById(cache.get(target));
+                        RelationshipType type = label != null ? DynamicRelationshipType.withName(label) : defaultRelType;
+                        Relationship relationship = from.createRelationshipTo(to, type);
+                        setDefaults(relKeys, relationship);
+                        if (reporter != null) reporter.update(0, 1, 0);
+                        count++;
+                        last = relationship;
+                        continue;
+                    }
                 }
             }
         }
-        tx.success();tx.finish();
-        if (reporter!=null) reporter.finish(nodes, rels, properties);
-        return nodes + rels;
+        return count;
     }
 
     private XMLEvent peek(XMLEventReader reader) throws XMLStreamException {

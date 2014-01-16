@@ -53,6 +53,7 @@ public class ImportCypherAppTest {
         createFile("in.csv", "name", "foo");
         assertCommand(client, "import-cypher -i in.csv create (n {name:{name}}) return n.name as name",
                 "Query: create (n {name:{name}}) return n.name as name infile in.csv delim ',' quoted false outfile (none) batch-size 20000",
+                "finish after 1 row(s)",
                 "Import statement execution created 1 rows of output.");
         try (Transaction tx = db.beginTx()) {
             assertEquals("foo",db.getNodeById(1).getProperty("name"));
@@ -65,6 +66,7 @@ public class ImportCypherAppTest {
         createFile("in.csv", "name:string,age:int", "foo,42");
         assertCommand(client, "import-cypher -i in.csv create (n {name:{name}, age: {age}}) return n.name as name",
                 "Query: create (n {name:{name}, age: {age}}) return n.name as name infile in.csv delim ',' quoted false outfile (none) batch-size 20000",
+                "finish after 1 row(s)",
                 "Import statement execution created 1 rows of output.");
         try (Transaction tx = db.beginTx()) {
             Node node = db.getNodeById(1);
@@ -78,6 +80,7 @@ public class ImportCypherAppTest {
         createFile("in.csv", "name,type", "foo,Bar");
         assertCommand(client, "import-cypher -i in.csv create (n:#{type} {name:{name}}) return n.name as name",
                 "Query: create (n:#{type} {name:{name}}) return n.name as name infile in.csv delim ',' quoted false outfile (none) batch-size 20000",
+                "finish after 1 row(s)",
                 "Import statement execution created 1 rows of output.");
         try (Transaction tx = db.beginTx()) {
             Node node = db.getNodeById(1);
@@ -91,6 +94,7 @@ public class ImportCypherAppTest {
     public void testRunWithInputFile2() throws Exception {
         assertCommand(client, "import-cypher -d \"\\t\" -i import.csv create (n {name:{Trackmbid}}) return n.name as name",
                 "Query: create (n {name:{Trackmbid}}) return n.name as name infile import.csv delim '\t' quoted false outfile (none) batch-size 20000",
+                "finish after 9 row(s)",
                 "Import statement execution created 9 rows of output.");
         try (Transaction tx = db.beginTx()) {
             assertEquals("5151ffce-8617-443f-959a-82692c717cbf",db.getNodeById(1).getProperty("name"));
@@ -104,6 +108,7 @@ public class ImportCypherAppTest {
         createFile("in.csv", data);
         assertCommand(client,"import-cypher -i in.csv -o out.csv create (n {name:{name}}) return n.name as name",
                 "Query: create (n {name:{name}}) return n.name as name infile in.csv delim ',' quoted false outfile out.csv batch-size 20000",
+                "finish after 2 row(s)",
                 "Import statement execution created 2 rows of output.");
         assertFile(data);
         try (Transaction tx = db.beginTx()) {
@@ -118,6 +123,7 @@ public class ImportCypherAppTest {
         createFile("in.csv", "name\tage", "foo\t12");
         assertCommand(client,"import-cypher -d \"\\t\" -i in.csv create (n {name:{name}, age:{age}}) return n.name as name",
             "Query: create (n {name:{name}, age:{age}}) return n.name as name infile in.csv delim '\t' quoted false outfile (none) batch-size 20000",
+            "finish after 1 row(s)",
             "Import statement execution created 1 rows of output.");
         try (Transaction tx = db.beginTx()) {
             assertEquals("foo",db.getNodeById(1).getProperty("name"));
@@ -131,6 +137,7 @@ public class ImportCypherAppTest {
         createFile("in.csv", "name age", "foo 12");
         assertCommand(client,"import-cypher -d \" \" -i in.csv create (n {name:{name}, age:{age}}) return n.name as name",
             "Query: create (n {name:{name}, age:{age}}) return n.name as name infile in.csv delim ' ' quoted false outfile (none) batch-size 20000",
+            "finish after 1 row(s)",
             "Import statement execution created 1 rows of output.");
         try (Transaction tx = db.beginTx()) {
             assertEquals("foo",db.getNodeById(1).getProperty("name"));

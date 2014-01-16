@@ -1,5 +1,6 @@
 package org.neo4j.shell.tools.imp.util;
 
+import org.neo4j.cypher.javacompat.QueryStatistics;
 import org.neo4j.shell.Output;
 
 import java.rmi.RemoteException;
@@ -13,6 +14,7 @@ public class ProgressReporter implements Reporter {
     long time;
     int counter;
     long start=System.currentTimeMillis();
+    int nodes, relationships, properties;
 
     public ProgressReporter(SizeCounter sizeCounter, Output out) {
         this.sizeCounter = sizeCounter;
@@ -21,9 +23,9 @@ public class ProgressReporter implements Reporter {
     }
 
     @Override
-    public void progress(long nodes, long relationships, long properties) {
+    public void progress(String msg) {
         long now = System.currentTimeMillis();
-        println(String.format("%d. %d%%: nodes = %d rels = %d properties = %d time %d ms", counter++, percent(), nodes, relationships, properties, now - time));
+        println(String.format(msg+" %d. %d%%: nodes = %d rels = %d properties = %d time %d ms total %d ms", counter++, percent(), nodes, relationships, properties, now - time, now - start));
         time = now;
     }
 
@@ -39,10 +41,17 @@ public class ProgressReporter implements Reporter {
         return sizeCounter.getPercent();
     }
 
-    @Override
-    public void finish(long nodes, long relationships, long properties) {
-        long now = System.currentTimeMillis();
-        println(String.format("Finished: nodes = %d rels = %d properties = %d total time %d ms", nodes, relationships, properties, now - start));
+    public void update(long nodes, long relationships, long properties) {
+        this.nodes += nodes;
+        this.relationships += relationships;
+        this.properties += properties;
     }
-
+    public void update(QueryStatistics queryStatistics) {
+        if (queryStatistics.containsUpdates()) {
+            update(
+                   queryStatistics.getNodesCreated() - queryStatistics.getDeletedNodes(),
+                   queryStatistics.getRelationshipsCreated() - queryStatistics.getDeletedRelationships(),
+                   queryStatistics.getPropertiesSet());
+        }
+    }
 }

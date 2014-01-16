@@ -39,7 +39,7 @@ public class ImportGraphMLAppTest {
     private void runImport(Object path) throws RemoteException, ShellException {
         assertCommand(client,"import-graphml -i " + path+" -b 20000 -t UNKNOWN -c",
                 "GraphML-Import file "+path+" rel-type UNKNOWN batch-size 20000 use disk-cache true",
-                "", "",
+                "finish after 25 row(s)",
                 "GraphML import created 13 entities.");
         try (Transaction tx = db.beginTx()) {
             assertEquals("green", db.getNodeById(0).getProperty("color"));
