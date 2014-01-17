@@ -38,7 +38,7 @@ public class ProgressReporter implements Reporter {
     }
 
     private long percent() {
-        return sizeCounter.getPercent();
+        return sizeCounter == null ? 100 : sizeCounter.getPercent();
     }
 
     public void update(long nodes, long relationships, long properties) {
