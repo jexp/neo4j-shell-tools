@@ -38,7 +38,7 @@ public class ExportGraphMLAppTest {
             "<key id=\"count\" for=\"edge\" attr.name=\"count\" attr.type=\"int\"/>\n";
     private static final String TEST_XML_DATA =
             "<node id=\"n0\" labels=\"FOO\" ><data key=\"labels\">FOO</data><data key=\"name\">John Doe</data></node>\n" +
-            "<edge id=\"e0\" source=\"n0\" target=\"n0\" label=\"BAR\"><data key=\"type\">BAR</data><data key=\"count\">0</data></edge>\n";
+            "<edge id=\"e0\" source=\"n0\" target=\"n0\" label=\"BAR\"><data key=\"label\">BAR</data><data key=\"count\">0</data></edge>\n";
     private static final String TEST_XML_FOOTER =
             "</graph>\n" +
             "</graphml>";

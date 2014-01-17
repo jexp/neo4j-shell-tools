@@ -147,7 +147,7 @@ public class ExportGraphMLApp extends AbstractApp {
 
     private int writeRelationship(BufferedWriter writer, Relationship rel) throws IOException {
         writer.write("<edge id=\"e"+rel.getId()+"\" source=\"n"+rel.getStartNode().getId()+"\" target=\"n"+rel.getEndNode().getId()+"\" label=\""+rel.getType().name()+"\">");
-        writeData(writer,"type",rel.getType().name());
+        writeData(writer,"label",rel.getType().name());
         int props = writeProps(writer, rel);
         writer.write("</edge>\n");
         return props;

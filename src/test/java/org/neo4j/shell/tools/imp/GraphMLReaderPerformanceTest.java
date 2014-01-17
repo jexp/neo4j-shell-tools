@@ -17,7 +17,7 @@ import java.io.File;
  * Using Enron Data set from Chris Diehl
  * http://www.infochimps.com/datasets/enron-email-data-with-manager-subordinate-relationship-metadata
  */
-@Ignore
+@Ignore("slow")
 public class GraphMLReaderPerformanceTest {
 
     public static final int MEGABYTE = 1024 * 1024;
