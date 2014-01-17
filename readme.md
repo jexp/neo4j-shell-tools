@@ -171,6 +171,41 @@ Finished: nodes = 2 rels = 1 properties = 2 total time 16 ms
 GraphML import created 3 entities.
 ````
 
+#### GraphML Export
+
+Export your Neo4j graph database to [GraphML](http://graphml.graphdrawing.org/) files. GraphML is an XML file format used to describe graphs. Can be used to import and visualize your graph in [Gephi](http://gephi.org).
+
+`export-graphml [-o out.graphml] [-t]`
+
+- -o out.graphml: graphml file to write to
+- -t write types, do a first pass over the data to determine property-types and write them to the graphml header
+
+Example output file: out.graphml
+
+````xml
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+ http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+<graph id="G" edgedefault="directed">
+<key id="name" for="node" attr.name="name" attr.type="string"/>
+<key id="count" for="edge" attr.name="count" attr.type="int"/>
+<node id="n0" labels="FOO" ><data key="labels">FOO</data><data key="name">John Doe</data></node>
+<node id="n1" labels="FOO" ><data key="labels">FOO</data><data key="name">Jane Doe</data></node>
+<edge id="e0" source="n0" target="n1" label="KNOWS"><data key="label">KNOWS</data><data key="count">0</data></edge>
+<edge id="e1" source="n1" target="n0" label="KNOWS"><data key="label">KNOWS</data><data key="count">1</data></edge>
+</graph>
+</graphml>
+````
+
+Usage:
+
+````
+$ export-graphml -o out.graphml
+
+````
+
 ### Prerequisites
 
 An up and running neo4j database which you can [download from here](http://www.neo4j.org/download).
