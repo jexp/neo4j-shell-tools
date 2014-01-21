@@ -13,6 +13,7 @@ public class BatchTransaction implements AutoCloseable {
     private Reporter reporter;
     Transaction tx;
     int count = 0;
+    int batchCount = 0;
 
     public BatchTransaction(GraphDatabaseService gdb, int batchSize, Reporter reporter) {
         this.gdb = gdb;
@@ -22,13 +23,22 @@ public class BatchTransaction implements AutoCloseable {
     }
 
     public void increment() {
-        count++;
-        if (count % batchSize == 0) {
-            tx.success();
-            tx.close();
-            if (reporter!=null) reporter.progress("commit after " + count + " row(s) ");
-            tx = gdb.beginTx();
+        count++;batchCount++;
+        if (batchCount >= batchSize) {
+            doCommit(true);
         }
+    }
+
+    public void commit() {
+        doCommit(true);
+    }
+
+    private void doCommit(boolean log) {
+        tx.success();
+        tx.close();
+        if (log && reporter!=null) reporter.progress("commit after " + count + " row(s) ");
+        tx = gdb.beginTx();
+        batchCount = 0;
     }
 
     @Override

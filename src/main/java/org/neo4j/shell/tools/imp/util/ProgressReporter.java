@@ -14,7 +14,7 @@ public class ProgressReporter implements Reporter {
     long time;
     int counter;
     long start=System.currentTimeMillis();
-    int nodes, relationships, properties;
+    private final ElementCounter elementCounter = new ElementCounter();
 
     public ProgressReporter(SizeCounter sizeCounter, Output out) {
         this.sizeCounter = sizeCounter;
@@ -25,7 +25,7 @@ public class ProgressReporter implements Reporter {
     @Override
     public void progress(String msg) {
         long now = System.currentTimeMillis();
-        println(String.format(msg+" %d. %d%%: nodes = %d rels = %d properties = %d time %d ms total %d ms", counter++, percent(), nodes, relationships, properties, now - time, now - start));
+        println(String.format(msg+" %d. %d%%: %s time %d ms total %d ms", counter++, percent(), elementCounter, now - time, now - start));
         time = now;
     }
 
@@ -42,16 +42,19 @@ public class ProgressReporter implements Reporter {
     }
 
     public void update(long nodes, long relationships, long properties) {
-        this.nodes += nodes;
-        this.relationships += relationships;
-        this.properties += properties;
+        elementCounter.update(nodes,relationships,properties);
     }
-    public void update(QueryStatistics queryStatistics) {
+
+    public static void update(QueryStatistics queryStatistics, Reporter reporter) {
         if (queryStatistics.containsUpdates()) {
-            update(
-                   queryStatistics.getNodesCreated() - queryStatistics.getDeletedNodes(),
-                   queryStatistics.getRelationshipsCreated() - queryStatistics.getDeletedRelationships(),
-                   queryStatistics.getPropertiesSet());
+            reporter.update(
+                    queryStatistics.getNodesCreated() - queryStatistics.getDeletedNodes(),
+                    queryStatistics.getRelationshipsCreated() - queryStatistics.getDeletedRelationships(),
+                    queryStatistics.getPropertiesSet());
         }
+    }
+
+    public ElementCounter getTotal() {
+        return elementCounter;
     }
 }

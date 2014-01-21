@@ -6,7 +6,7 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.shell.tools.imp.util.GraphMLReader;
+import org.neo4j.shell.tools.imp.format.graphml.XmlGraphMLReader;
 import org.neo4j.shell.tools.imp.util.MapNodeCache;
 import org.neo4j.test.TestGraphDatabaseFactory;
 
@@ -35,13 +35,13 @@ public class GraphMLReaderTest {
             "    <edge source=\"n1\" target=\"n2\"/>\n" +
             "  </graph>\n" +
             "</graphml>";
-    private GraphMLReader graphMLReader;
+    private XmlGraphMLReader graphMLReader;
     private GraphDatabaseService gdb;
 
     @Before
     public void setUp() throws Exception {
         gdb = new TestGraphDatabaseFactory().newImpermanentDatabase();
-        graphMLReader = new GraphMLReader(gdb).storeNodeIds();
+        graphMLReader = new XmlGraphMLReader(gdb).storeNodeIds();
     }
 
     @Test

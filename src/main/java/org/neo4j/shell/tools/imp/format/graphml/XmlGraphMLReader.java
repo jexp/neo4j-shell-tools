@@ -1,6 +1,7 @@
-package org.neo4j.shell.tools.imp.util;
+package org.neo4j.shell.tools.imp.format.graphml;
 
 import org.neo4j.graphdb.*;
+import org.neo4j.shell.tools.imp.util.BatchTransaction;
 import org.neo4j.shell.tools.imp.util.NodeCache;
 import org.neo4j.shell.tools.imp.util.Reporter;
 
@@ -18,7 +19,7 @@ import java.util.Map;
 /**
  * Created by mh on 10.07.13.
  */
-public class GraphMLReader {
+public class XmlGraphMLReader {
 
     private GraphDatabaseService gdb;
     private boolean storeNodeIds;
@@ -26,21 +27,21 @@ public class GraphMLReader {
     private int batchSize = 40000;
     private Reporter reporter;
 
-    public GraphMLReader storeNodeIds() {
+    public XmlGraphMLReader storeNodeIds() {
         this.storeNodeIds = true;
         return this;
     }
 
-    public GraphMLReader relType(String name) {
+    public XmlGraphMLReader relType(String name) {
         this.defaultRelType = DynamicRelationshipType.withName(name);
         return this;
     }
 
-    public GraphMLReader batchSize(int batchSize) {
+    public XmlGraphMLReader batchSize(int batchSize) {
         this.batchSize = batchSize;
         return this;
     }
-    public GraphMLReader reporter(Reporter reporter) {
+    public XmlGraphMLReader reporter(Reporter reporter) {
         this.reporter = reporter;
         return this;
     }
@@ -113,7 +114,7 @@ public class GraphMLReader {
     public static final QName TYPE = QName.valueOf("attr.type");
     public static final QName KEY = QName.valueOf("key");
 
-    public GraphMLReader(GraphDatabaseService gdb) {
+    public XmlGraphMLReader(GraphDatabaseService gdb) {
         this.gdb = gdb;
     }
 

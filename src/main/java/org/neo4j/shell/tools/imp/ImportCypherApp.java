@@ -9,6 +9,7 @@ import org.neo4j.kernel.impl.util.StringLogger;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
+import org.neo4j.shell.tools.imp.format.Config;
 import org.neo4j.shell.tools.imp.util.*;
 
 import java.io.*;
@@ -21,10 +22,6 @@ import java.util.Map;
  */
 public class ImportCypherApp extends AbstractApp {
 
-    public static final char QUOTECHAR = '"';
-//    public static final int DEFAULT_BATCH_SIZE = 20000;
-    public static final int DEFAULT_BATCH_SIZE = 1000; // work around cypher bug
-
     private ExecutionEngine engine;
 
     {
@@ -32,8 +29,8 @@ public class ImportCypherApp extends AbstractApp {
                 "Input CSV/TSV file" ) );
         addOptionDefinition( "o", new OptionDefinition( OptionValueType.MUST,
                 "Output CSV/TSV file" ) );
-        addOptionDefinition( "b", new OptionDefinition( OptionValueType.MUST,
-                "Batch Size default "+DEFAULT_BATCH_SIZE ) );
+        addOptionDefinition("b", new OptionDefinition(OptionValueType.MUST,
+                "Batch Size default " + Config.DEFAULT_BATCH_SIZE));
         addOptionDefinition( "d", new OptionDefinition( OptionValueType.MUST,
                 "Delimeter, default is comma ',' " ) );
         addOptionDefinition( "q", new OptionDefinition( OptionValueType.NONE,
@@ -58,8 +55,9 @@ public class ImportCypherApp extends AbstractApp {
 
     @Override
     public Continuation execute(AppCommandParser parser, Session session, Output out) throws Exception {
+        Config config = Config.fromOptions(parser);
         char delim = delim(parser.option("d", ","));
-        int batchSize = Integer.parseInt(parser.option("b", String.valueOf(DEFAULT_BATCH_SIZE)));
+        int batchSize = Integer.parseInt(parser.option("b", String.valueOf(Config.DEFAULT_BATCH_SIZE)));
         boolean quotes = parser.options().containsKey("q");
         String inputFileName = parser.option("i", null);
         CountingReader inputFile = FileUtils.readerFor(inputFileName);
@@ -69,15 +67,15 @@ public class ImportCypherApp extends AbstractApp {
         out.println(String.format("Query: %s infile %s delim '%s' quoted %s outfile %s batch-size %d",
                                    query,name(inputFileName),delim,quotes,name(outputFile),batchSize));
 
-        CSVReader reader = createReader(inputFile, delim, quotes);
+        CSVReader reader = createReader(inputFile, config);
 
-        CSVWriter writer = createWriter(outputFile, delim, quotes);
+        CSVWriter writer = createWriter(outputFile, config);
 
         int count;
         if (reader==null) {
             count = execute(query, writer);
         } else {
-            count = executeOnInput(reader, query, writer, batchSize, new ProgressReporter(inputFile,out));
+            count = executeOnInput(reader, query, writer, config, new ProgressReporter(inputFile,out));
         }
         out.println("Import statement execution created "+count+" rows of output.");
         if (reader!=null) reader.close();
@@ -110,15 +108,15 @@ public class ImportCypherApp extends AbstractApp {
         return line;
     }
 
-    private CSVWriter createWriter(File outputFile, char delim, boolean quotes) throws IOException {
+    private CSVWriter createWriter(File outputFile, Config config) throws IOException {
         if (outputFile==null) return null;
         FileWriter file = new FileWriter(outputFile);
-        return quotes ? new CSVWriter(file,delim, QUOTECHAR) : new CSVWriter(file,delim);
+        return config.isQuotes() ? new CSVWriter(file,config.getDelimChar(), Config.QUOTECHAR) : new CSVWriter(file,config.getDelimChar());
     }
 
-    private CSVReader createReader(CountingReader reader, char delim, boolean quotes) throws FileNotFoundException {
+    private CSVReader createReader(CountingReader reader, Config config) throws FileNotFoundException {
         if (reader==null) return null;
-        return quotes ? new CSVReader(reader,delim, QUOTECHAR) : new CSVReader(reader,delim);
+        return config.isQuotes() ? new CSVReader(reader,config.getDelimChar(), Config.QUOTECHAR) : new CSVReader(reader,config.getDelimChar());
     }
 
     private int execute(String query, CSVWriter writer) {
@@ -127,21 +125,21 @@ public class ImportCypherApp extends AbstractApp {
     }
 
 
-    private int executeOnInput(CSVReader reader, String query, CSVWriter writer, int batchSize, ProgressReporter reporter) throws IOException {
+    private int executeOnInput(CSVReader reader, String query, CSVWriter writer, Config config, ProgressReporter reporter) throws IOException {
         Map<String, Object> params = createParams(reader);
         Map<String, Type> types = extractTypes(params);
         Map<String, String> replacements = computeReplacements(params, query);
         String[] input;
         boolean first = true;
         int outCount = 0;
-        try (BatchTransaction tx = new BatchTransaction(getServer().getDb(),batchSize,reporter)) {
+        try (BatchTransaction tx = new BatchTransaction(getServer().getDb(),config.getBatchSize(),reporter)) {
             while ((input = reader.readNext()) != null) {
                 Map<String, Object> queryParams = update(params, types, input);
                 String newQuery = applyReplacements(query, replacements, queryParams);
                 ExecutionResult result = getEngine().execute(newQuery, queryParams);
                 outCount += writeResult(result, writer, first);
                 first = false;
-                reporter.update(result.getQueryStatistics());
+                ProgressReporter.update(result.getQueryStatistics(), reporter);
                 tx.increment();
             }
         }

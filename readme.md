@@ -107,9 +107,9 @@ Supported Types
 
 Populate your database with [geoff](http://nigelsmall.com/geoff) - a declarative notation for representing graph data in a human-readable format.
 
-`import-geoff [-g in.geoff]`
+`import-geoff [-i in.geoff]`
 
-- -g in.geoff: newline separated geoff rule file (or URL)
+- -i in.geoff: newline separated geoff rule file (or URL)
 
 Example input file: in.geoff
 
@@ -122,7 +122,7 @@ Example input file: in.geoff
 Usage:
 
 ````
-$ import-geoff -g in.geoff
+$ import-geoff -i in.geoff
 Geoff import of in.geoff created 3 entities.
 ````
 

@@ -9,6 +9,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.factory.GraphDatabaseSettings;
 import org.neo4j.kernel.impl.util.FileUtils;
 import org.neo4j.shell.impl.SystemOutput;
+import org.neo4j.shell.tools.imp.format.graphml.XmlGraphMLReader;
 import org.neo4j.shell.tools.imp.util.*;
 
 import java.io.File;
@@ -23,7 +24,7 @@ public class GraphMLReaderPerformanceTest {
     public static final int MEGABYTE = 1024 * 1024;
 
     private GraphDatabaseService db;
-    private GraphMLReader graphMlReader;
+    private XmlGraphMLReader graphMlReader;
     private CountingReader reader;
     private File directory = new File("target/enron.db");
     private File graphMlFile = new File("test-data/Enron_Dataset_v0.12.graphml");
@@ -40,7 +41,7 @@ public class GraphMLReaderPerformanceTest {
                 .newGraphDatabase();
 
         reader = new CountingReader(graphMlFile);
-        graphMlReader = new GraphMLReader(db).reporter(new ProgressReporter(reader,new SystemOutput()));
+        graphMlReader = new XmlGraphMLReader(db).reporter(new ProgressReporter(reader,new SystemOutput()));
     }
 
     @Test

@@ -4,7 +4,7 @@ import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
-import org.neo4j.shell.kernel.apps.TransactionProvidingApp;
+import org.neo4j.shell.tools.imp.format.graphml.XmlGraphMLReader;
 import org.neo4j.shell.tools.imp.util.*;
 
 import javax.xml.stream.XMLStreamException;
@@ -68,7 +68,7 @@ public class ImportGraphMLApp extends AbstractApp {
         try {
             GraphDatabaseAPI db = getServer().getDb();
             ProgressReporter reporter = new ProgressReporter(reader, out);
-            GraphMLReader graphMLReader = new GraphMLReader(db)
+            XmlGraphMLReader graphMLReader = new XmlGraphMLReader(db)
                     .batchSize(batchSize).relType(relType)
                     .reporter(reporter);
             NodeCache cache = diskSpillCache ? MapNodeCache.usingMapDb() : MapNodeCache.usingHashMap();
