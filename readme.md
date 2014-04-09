@@ -8,7 +8,7 @@ Download [neo4j-shell-tools-2.0.zip](http://dist.neo4j.org/jexp/shell/neo4j-shel
 neo4j server's lib directory e.g.
 
 ````
-cd /path/to/neo4j-community-2.0.0-M05
+cd /path/to/neo4j-community-2.0.1
 curl http://dist.neo4j.org/jexp/shell/neo4j-shell-tools-2.0.zip -o neo4j-shell-tools.zip
 unzip neo4j-shell-tools.zip -d lib
 ````
@@ -18,7 +18,7 @@ unzip neo4j-shell-tools.zip -d lib
 Restart neo4j and then launch the neo4j-shell:
 
 ````
-cd /path/to/neo4j-community-2.0.0-M05
+cd /path/to/neo4j-community-2.0.1
 ./bin/neo4j restart
 ./bin/neo4j-shell
 ````
