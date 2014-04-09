@@ -70,7 +70,7 @@ public class MultiStatementCypherSubGraphExporter {
 
     private Map<String, String> gatherUniqueConstraints() {
         Map<String, String> result = new HashMap<>();
-        for (IndexDefinition indexDefinition : graph.indexes()) {
+        for (IndexDefinition indexDefinition : graph.getIndexes()) {
             if (!indexDefinition.isConstraintIndex()) continue;
             result.put(indexDefinition.getLabel().name(), IteratorUtil.first(indexDefinition.getPropertyKeys()));
         }
@@ -103,7 +103,7 @@ public class MultiStatementCypherSubGraphExporter {
 
     private Collection<String> exportIndexes() {
         Collection<String> result = new ArrayList<>();
-        for (IndexDefinition index : graph.indexes()) {
+        for (IndexDefinition index : graph.getIndexes()) {
             String prop = IteratorUtil.single(index.getPropertyKeys());
             String label = index.getLabel().name();
             result.add(index.isConstraintIndex() ? uniqueConstraint(label, prop) : index(label, prop));

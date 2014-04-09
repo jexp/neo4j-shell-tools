@@ -2,24 +2,26 @@ package org.neo4j.shell.tools.imp.util;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.kernel.GraphDatabaseAPI;
+import org.neo4j.kernel.TransactionBuilder;
 
 /**
 * @author mh
 * @since 16.01.14
 */
 public class BatchTransaction implements AutoCloseable {
-    GraphDatabaseService gdb;
-    int batchSize;
-    private Reporter reporter;
+    private final GraphDatabaseAPI gdb;
+    private final int batchSize;
+    private final Reporter reporter;
     Transaction tx;
     int count = 0;
     int batchCount = 0;
 
     public BatchTransaction(GraphDatabaseService gdb, int batchSize, Reporter reporter) {
-        this.gdb = gdb;
+        this.gdb = (GraphDatabaseAPI) gdb;
         this.batchSize = batchSize;
         this.reporter = reporter;
-        tx = gdb.beginTx();
+        tx = beginTx();
     }
 
     public void increment() {
@@ -37,8 +39,12 @@ public class BatchTransaction implements AutoCloseable {
         tx.success();
         tx.close();
         if (log && reporter!=null) reporter.progress("commit after " + count + " row(s) ");
-        tx = gdb.beginTx();
+        tx = beginTx();
         batchCount = 0;
+    }
+
+    private Transaction beginTx() {
+        return gdb.beginTx();
     }
 
     @Override

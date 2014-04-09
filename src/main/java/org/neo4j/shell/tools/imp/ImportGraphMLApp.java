@@ -23,8 +23,10 @@ public class ImportGraphMLApp extends AbstractApp {
                 "Input GraphML file"));
         addOptionDefinition("b", new OptionDefinition(OptionValueType.MUST,
                 "Batch Size default " + DEFAULT_BATCH_SIZE));
-        addOptionDefinition("t", new OptionDefinition(OptionValueType.MUST,
+        addOptionDefinition("r", new OptionDefinition(OptionValueType.MUST,
                 "Default Relationship-Type otherwise edge attribute 'label' " + DEFAULT_REL_TYPE));
+        addOptionDefinition("t", new OptionDefinition(OptionValueType.MAY,
+                "Import labels from labels node attribute and/or labels property"));
         addOptionDefinition("c", new OptionDefinition(OptionValueType.NONE,
                 "Use a node-cache that overflows to disk, necessary for very large imports"));
     }
@@ -46,11 +48,12 @@ public class ImportGraphMLApp extends AbstractApp {
         String fileName = parser.option("i", null);
         CountingReader file = FileUtils.readerFor(fileName);
         int batchSize = Integer.parseInt(parser.option("b", String.valueOf(DEFAULT_BATCH_SIZE)));
-        String relType = parser.option("t", DEFAULT_REL_TYPE);
+        String relType = parser.option("r", DEFAULT_REL_TYPE);
+        boolean readLabels = parser.options().containsKey("t");
         boolean diskSpillCache = parser.options().containsKey("c");
         if (file != null) {
             out.println(String.format("GraphML-Import file %s rel-type %s batch-size %d use disk-cache %s",fileName,relType,batchSize,diskSpillCache));
-            long count = execute(file, batchSize, relType, diskSpillCache, out);
+            long count = execute(file, batchSize, relType, diskSpillCache,readLabels, out);
             out.println("GraphML import created " + count + " entities.");
         }
         return Continuation.INPUT_COMPLETE;
@@ -64,12 +67,13 @@ public class ImportGraphMLApp extends AbstractApp {
         return null;
     }
 
-    private long execute(CountingReader reader, int batchSize, String relType, boolean diskSpillCache, Output out) throws XMLStreamException, IOException {
+    private long execute(CountingReader reader, int batchSize, String relType, boolean diskSpillCache, boolean readLabels, Output out) throws XMLStreamException, IOException {
         try {
             GraphDatabaseAPI db = getServer().getDb();
             ProgressReporter reporter = new ProgressReporter(reader, out);
             XmlGraphMLReader graphMLReader = new XmlGraphMLReader(db)
                     .batchSize(batchSize).relType(relType)
+                    .nodeLabels(readLabels)
                     .reporter(reporter);
             NodeCache cache = diskSpillCache ? MapNodeCache.usingMapDb() : MapNodeCache.usingHashMap();
             return graphMLReader.parseXML(reader, cache);

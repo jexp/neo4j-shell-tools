@@ -4,28 +4,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.cypher.export.DatabaseSubGraph;
 import org.neo4j.graphdb.*;
-import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.ShellException;
-import org.neo4j.shell.impl.SameJvmClient;
-import org.neo4j.shell.kernel.GraphDatabaseShellServer;
 import org.neo4j.shell.tools.imp.format.Config;
+import org.neo4j.shell.tools.imp.format.graphml.XmlGraphMLReader;
 import org.neo4j.shell.tools.imp.format.graphml.XmlGraphMLWriter;
 import org.neo4j.shell.tools.imp.util.ElementCounter;
 import org.neo4j.shell.tools.imp.util.ProgressReporter;
 import org.neo4j.test.TestGraphDatabaseFactory;
 
 import javax.xml.stream.XMLStreamException;
-import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.StringWriter;
 import java.rmi.RemoteException;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Random;
-import java.util.Scanner;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.neo4j.shell.tools.Asserts.assertCommand;
 
 /**
  * Created by mh on 04.07.13.
@@ -68,6 +63,13 @@ public class ExportXmlGraphMLWriterTest {
             tx.success();
             return writer.toString().trim();
         }
+    }
+
+    @Test
+    public void testSplitLabels() throws Exception {
+        String labels=":Label1 :Label2  :Label3:Label4 ";
+        String[] parts = labels.trim().split(XmlGraphMLReader.LABEL_SPLIT);
+        assertArrayEquals("mismatch "+ Arrays.toString(parts),new String[]{"","Label1","Label2","Label3","Label4"},parts);
     }
 
     @Test

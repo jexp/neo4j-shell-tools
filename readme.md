@@ -133,7 +133,8 @@ Populate your database from [GraphML](http://graphml.graphdrawing.org/) files. G
 `import-graphml [-i in.xml] [-t REL_TYPE] [-b 20000] [-c]`
 
 - -i in.xml: graphml file (or URL)
-- -t REL_TYPE default relationship-type for relationships without a label attribute
+- -r REL_TYPE default relationship-type for relationships without a label attribute
+- -t also import node labels, see the export format
 - -b batch-size batch-commit size
 - -c uses a cache that spills to disk for very large imports
 

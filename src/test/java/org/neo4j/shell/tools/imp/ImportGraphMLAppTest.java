@@ -2,6 +2,7 @@ package org.neo4j.shell.tools.imp;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.graphdb.DynamicLabel;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.ShellException;
@@ -30,6 +31,18 @@ public class ImportGraphMLAppTest {
         String path = getClass().getResource("/graphml-with-attributes.xml").getPath();
         runImport(path);
     }
+
+    @Test
+    public void testRunWithLabelsAndInputFile() throws Exception {
+        String path = getClass().getResource("/graphml-with-labels.xml").getPath();
+        runImport(path);
+        try (Transaction tx = db.beginTx()) {
+            assertEquals(true, db.getNodeById(0).hasLabel(DynamicLabel.label("Color")));
+            assertEquals(true, db.getNodeById(2).hasLabel(DynamicLabel.label("Color")));
+            assertEquals(true, db.getNodeById(5).hasLabel(DynamicLabel.label("Color")));
+            assertEquals(true, db.getNodeById(5).hasLabel(DynamicLabel.label("Highlight")));
+        }
+    }
     @Test
     public void testRunWithInputUrl() throws Exception {
         URL path = getClass().getResource("/graphml-with-attributes.xml");
@@ -37,9 +50,9 @@ public class ImportGraphMLAppTest {
     }
 
     private void runImport(Object path) throws RemoteException, ShellException {
-        assertCommand(client,"import-graphml -i " + path+" -b 20000 -t UNKNOWN -c",
+        assertCommand(client,"import-graphml -t -i " + path+" -b 20000 -r UNKNOWN -c",
                 "GraphML-Import file "+path+" rel-type UNKNOWN batch-size 20000 use disk-cache true",
-                "finish after 25 row(s)",
+                "finish after 13 row(s)",
                 "GraphML import created 13 entities.");
         try (Transaction tx = db.beginTx()) {
             assertEquals("green", db.getNodeById(0).getProperty("color"));

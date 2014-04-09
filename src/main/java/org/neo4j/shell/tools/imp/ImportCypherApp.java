@@ -201,9 +201,14 @@ public class ImportCypherApp extends AbstractApp {
     private void writeRow(CSVWriter writer, String[] cols, String[] data, Map<String, Object> row) {
         for (int i = 0; i < cols.length; i++) {
             String col = cols[i];
-            data[i]=row.get(col).toString();
+            data[i]= toString(row, col);
         }
         writer.writeNext(data);
+    }
+
+    private String toString(Map<String, Object> row, String col) {
+        Object value = row.get(col);
+        return value == null ? null : value.toString();
     }
 
     private Map<String, Object> createParams(CSVReader reader) throws IOException {

@@ -21,11 +21,13 @@ import java.util.Map;
  */
 public class XmlGraphMLReader {
 
+    public static final String LABEL_SPLIT = " *: *";
     private GraphDatabaseService gdb;
     private boolean storeNodeIds;
     private DynamicRelationshipType defaultRelType =DynamicRelationshipType.withName("UNKNOWN");
     private int batchSize = 40000;
     private Reporter reporter;
+    private boolean labels;
 
     public XmlGraphMLReader storeNodeIds() {
         this.storeNodeIds = true;
@@ -41,10 +43,18 @@ public class XmlGraphMLReader {
         this.batchSize = batchSize;
         return this;
     }
+
+    public XmlGraphMLReader nodeLabels(boolean readLabels) {
+        this.labels = readLabels;
+        return this;
+    }
+
     public XmlGraphMLReader reporter(Reporter reporter) {
         this.reporter = reporter;
         return this;
     }
+
+
 
     enum Type {
         BOOLEAN() {
@@ -95,6 +105,10 @@ public class XmlGraphMLReader {
             this.forNode = forNode == null || forNode.equalsIgnoreCase("node");
         }
 
+        private static Key defaultKey(String id, boolean forNode) {
+            return new Key(id,id,"string", forNode ? "node" : "edge");
+        }
+
         public void setDefault(String data) {
             this.defaultValue = type.parse(data);
         }
@@ -106,6 +120,7 @@ public class XmlGraphMLReader {
     }
 
     public static final QName ID = QName.valueOf("id");
+    public static final QName LABELS = QName.valueOf("labels");
     public static final QName SOURCE = QName.valueOf("source");
     public static final QName TARGET = QName.valueOf("target");
     public static final QName LABEL = QName.valueOf("label");
@@ -131,7 +146,6 @@ public class XmlGraphMLReader {
             while (reader.hasNext()) {
                 XMLEvent event = (XMLEvent) reader.next();
                 if (event.isStartElement()) {
-                    tx.increment();
 
                     StartElement element = event.asStartElement();
                     String name = element.getName().getLocalPart();
@@ -153,21 +167,32 @@ public class XmlGraphMLReader {
                     if (name.equals("data")) {
                         if (last == null) continue;
                         String id = getAttribute(element, KEY);
-                        Key key = last instanceof Node ? nodeKeys.get(id) : relKeys.get(id);
+                        boolean isNode = last instanceof Node;
+                        Key key = isNode ? nodeKeys.get(id) : relKeys.get(id);
+                        if (key == null) key = Key.defaultKey(id, isNode);
                         Object value = key.defaultValue;
                         XMLEvent next = peek(reader);
                         if (next.isCharacters()) {
                             value = key.parseValue(reader.nextEvent().asCharacters().getData());
                         }
                         if (value != null) {
-                            last.setProperty(key.name, value);
-                            if (reporter != null) reporter.update(0, 0, 1);
+                            if (this.labels && isNode && id.equals("labels")) {
+                                addLabels((Node)last,value.toString());
+                            } else {
+                                last.setProperty(key.name, value);
+                                if (reporter != null) reporter.update(0, 0, 1);
+                            }
                         }
                         continue;
                     }
                     if (name.equals("node")) {
+                        tx.increment();
                         String id = getAttribute(element, ID);
                         Node node = gdb.createNode();
+                        if (this.labels) {
+                            String labels = getAttribute(element, LABELS);
+                            addLabels(node, labels);
+                        }
                         if (storeNodeIds) node.setProperty("id", id);
                         setDefaults(nodeKeys, node);
                         last = node;
@@ -177,6 +202,7 @@ public class XmlGraphMLReader {
                         continue;
                     }
                     if (name.equals("edge")) {
+                        tx.increment();
                         String source = getAttribute(element, SOURCE);
                         String target = getAttribute(element, TARGET);
                         String label = getAttribute(element, LABEL);
@@ -194,6 +220,17 @@ public class XmlGraphMLReader {
             }
         }
         return count;
+    }
+
+    private void addLabels(Node node, String labels) {
+        if (labels==null) return;
+        labels = labels.trim();
+        if (labels.isEmpty()) return;
+        String[] parts = labels.split(LABEL_SPLIT);
+        for (String part : parts) {
+            if (part.trim().isEmpty()) continue;
+            node.addLabel(DynamicLabel.label(part.trim()));
+        }
     }
 
     private XMLEvent peek(XMLEventReader reader) throws XMLStreamException {
