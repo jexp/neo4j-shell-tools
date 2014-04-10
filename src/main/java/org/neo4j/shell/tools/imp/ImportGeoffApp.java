@@ -4,7 +4,7 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
-import org.neo4j.shell.tools.imp.format.Config;
+import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.format.GeoffFormat;
 import org.neo4j.shell.tools.imp.util.CountingReader;
 import org.neo4j.shell.tools.imp.util.FileUtils;

@@ -10,7 +10,7 @@ import java.io.StringWriter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.neo4j.shell.tools.imp.format.Config.config;
+import static org.neo4j.shell.tools.imp.util.Config.config;
 
 /**
  * @author mh

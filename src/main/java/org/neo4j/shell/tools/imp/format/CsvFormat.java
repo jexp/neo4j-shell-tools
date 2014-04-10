@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.neo4j.cypher.export.SubGraph;
 import org.neo4j.graphdb.*;
 import org.neo4j.helpers.collection.Iterables;
+import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.util.ElementCounter;
 import org.neo4j.shell.tools.imp.util.MetaInformation;
 import org.neo4j.shell.tools.imp.util.Reporter;
@@ -13,7 +14,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.*;
 
-import static java.util.Arrays.asList;
 import static org.neo4j.helpers.collection.Iterables.join;
 import static org.neo4j.shell.tools.imp.util.MetaInformation.collectPropTypesForNodes;
 import static org.neo4j.shell.tools.imp.util.MetaInformation.collectPropTypesForRelationships;

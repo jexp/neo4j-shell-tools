@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.neo4j.cypher.export.DatabaseSubGraph;
 import org.neo4j.graphdb.*;
 import org.neo4j.shell.ShellException;
-import org.neo4j.shell.tools.imp.format.Config;
+import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.format.graphml.XmlGraphMLReader;
 import org.neo4j.shell.tools.imp.format.graphml.XmlGraphMLWriter;
 import org.neo4j.shell.tools.imp.util.ElementCounter;
@@ -36,9 +36,11 @@ public class ExportXmlGraphMLWriterTest {
     static final String TEST_XML_KEYS =
             "<key id=\"na&lt;&gt;me\" for=\"node\" attr.name=\"na&lt;&gt;me\" attr.type=\"string\"/>\n" +
             "<key id=\"count\" for=\"edge\" attr.name=\"count\" attr.type=\"int\"/>\n";
-    static final String TEST_XML_DATA =
-            "<node id=\"n0\" labels=\":FOO\"><data key=\"labels\">:FOO</data><data key=\"na&lt;&gt;me\">John &amp; Dö</data></node>\n" +
+    public static final String TEST_XML_DATA_NODE =
+            "<node id=\"n0\" labels=\":FOO\"><data key=\"labels\">:FOO</data><data key=\"na&lt;&gt;me\">John &amp; Dö</data></node>\n";
+    public static final String TEST_XML_DATA_EDGE =
             "<edge id=\"e0\" source=\"n0\" target=\"n0\" label=\"BAR\"><data key=\"label\">BAR</data><data key=\"count\">0</data></edge>\n";
+    static final String TEST_XML_DATA = TEST_XML_DATA_NODE + TEST_XML_DATA_EDGE;
     static final String TEST_XML_FOOTER =
             "</graph>\n" +
             "</graphml>";
@@ -80,6 +82,7 @@ public class ExportXmlGraphMLWriterTest {
         assertEquals(new ElementCounter().update(1, 1, 2), reporter.getTotal());
         assertEquals(TEST_XML_HEADER+TEST_XML_DATA+TEST_XML_FOOTER,xml);
     }
+
     @Test
     public void testExportTinyGraphWithKeys() throws Exception {
         createData(1);

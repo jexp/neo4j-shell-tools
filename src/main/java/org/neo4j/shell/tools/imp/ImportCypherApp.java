@@ -9,7 +9,7 @@ import org.neo4j.kernel.impl.util.StringLogger;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
-import org.neo4j.shell.tools.imp.format.Config;
+import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.util.*;
 
 import java.io.*;
@@ -22,7 +22,6 @@ import java.util.Map;
  */
 public class ImportCypherApp extends AbstractApp {
 
-    private ExecutionEngine engine;
 
     {
         addOptionDefinition( "i", new OptionDefinition( OptionValueType.MUST,
@@ -37,6 +36,7 @@ public class ImportCypherApp extends AbstractApp {
                 "Quoted Strings in file" ) );
     }
 
+    private ExecutionEngine engine;
     protected ExecutionEngine getEngine() {
         if (engine==null) engine=new ExecutionEngine(getServer().getDb(), StringLogger.SYSTEM);
         return engine;
@@ -62,7 +62,7 @@ public class ImportCypherApp extends AbstractApp {
         String inputFileName = parser.option("i", null);
         CountingReader inputFile = FileUtils.readerFor(inputFileName);
         File outputFile = fileFor(parser, "o");
-        String query = extractQuery(parser);
+        String query = Config.extractQuery(parser);
 
         out.println(String.format("Query: %s infile %s delim '%s' quoted %s outfile %s batch-size %d",
                                    query,name(inputFileName),delim,quotes,name(outputFile),batchSize));
@@ -93,19 +93,6 @@ public class ImportCypherApp extends AbstractApp {
         if (value.contains("\\t")) return '\t';
         if (value.contains(" ")) return ' ';
         throw new RuntimeException("Illegal delimiter '"+value+"'");
-    }
-
-    private String extractQuery(AppCommandParser parser) {
-        String line = parser.getLineWithoutApp().trim();
-        Map<String, String> options = new HashMap<String, String>(parser.options());
-        while (!options.isEmpty() && line.startsWith("-")) {
-            String option = options.remove(line.substring(1, 2));
-            int offset = 3 + option.length();
-            if (option.trim().isEmpty()) offset+=2; // for quoted space or tab
-            int idx = line.indexOf(" ", offset);
-            if (idx != -1) line = line.substring(idx+1).trim();
-        }
-        return line;
     }
 
     private CSVWriter createWriter(File outputFile, Config config) throws IOException {

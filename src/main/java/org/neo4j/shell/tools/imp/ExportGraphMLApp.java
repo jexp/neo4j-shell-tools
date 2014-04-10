@@ -1,27 +1,23 @@
 package org.neo4j.shell.tools.imp;
 
+import org.neo4j.cypher.export.CypherResultSubGraph;
 import org.neo4j.cypher.export.DatabaseSubGraph;
-import org.neo4j.graphdb.*;
-import org.neo4j.kernel.GraphDatabaseAPI;
+import org.neo4j.cypher.export.SubGraph;
+import org.neo4j.cypher.javacompat.ExecutionEngine;
+import org.neo4j.cypher.javacompat.ExecutionResult;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Transaction;
+import org.neo4j.kernel.impl.util.StringLogger;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
-import org.neo4j.shell.tools.imp.format.Config;
 import org.neo4j.shell.tools.imp.format.Format;
-import org.neo4j.shell.tools.imp.format.SimpleGraphMLFormat;
 import org.neo4j.shell.tools.imp.format.XmlGraphMLFormat;
-import org.neo4j.shell.tools.imp.format.graphml.XmlGraphMLWriter;
+import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.util.ProgressReporter;
-import org.neo4j.shell.tools.imp.util.Reporter;
-import org.neo4j.tooling.GlobalGraphOperations;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.util.*;
-
-import static java.util.Arrays.asList;
-import static org.neo4j.helpers.collection.Iterables.join;
 
 /**
  * TODO: arrays, labels, rel-types, key-types
@@ -34,7 +30,15 @@ public class ExportGraphMLApp extends AbstractApp {
         addOptionDefinition( "o", new OptionDefinition( OptionValueType.MUST,
                 "Output GraphML file" ) );
         addOptionDefinition( "t", new OptionDefinition( OptionValueType.MAY,
-                "Write Key Types upfront (double pass)" ) );
+                "Write key types upfront (double pass)" ) );
+        addOptionDefinition( "r", new OptionDefinition( OptionValueType.MAY,
+                "Add all nodes of selected relationships" ) );
+    }
+
+    private ExecutionEngine engine;
+    protected ExecutionEngine getEngine() {
+        if (engine==null) engine=new ExecutionEngine(getServer().getDb(), StringLogger.SYSTEM);
+        return engine;
     }
 
     @Override
@@ -48,14 +52,32 @@ public class ExportGraphMLApp extends AbstractApp {
         return (GraphDatabaseShellServer) super.getServer();
     }
 
+    private SubGraph cypherResultSubGraph(String query, boolean relsBetween) {
+        try (Transaction tx = getServer().getDb().beginTx()) {
+            ExecutionResult result = getEngine().execute(query);
+            SubGraph subGraph = CypherResultSubGraph.from(result, getServer().getDb(), relsBetween);
+            tx.success();
+            return subGraph;
+        }
+    }
+
+
     @Override
     public Continuation execute(AppCommandParser parser, Session session, Output out) throws Exception {
+        Config config = Config.fromOptions(parser);
+
         String fileName = parser.option("o", null);
+        boolean relsBetween = parser.options().containsKey("r");
         BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+
         ProgressReporter reporter = new ProgressReporter(null, out);
+
         GraphDatabaseService db = getServer().getDb();
+
         Format exportFormat = new XmlGraphMLFormat(db);
-        exportFormat.dump(new DatabaseSubGraph(db), writer, reporter, Config.fromOptions(parser));
+        String query = Config.extractQuery(parser);
+        SubGraph graph = query.isEmpty() ? new DatabaseSubGraph(db) : cypherResultSubGraph(query,relsBetween);
+        exportFormat.dump(graph, writer, reporter, config);
         writer.close();
         reporter.progress("Wrote to GraphML-file " + fileName);
         return Continuation.INPUT_COMPLETE;

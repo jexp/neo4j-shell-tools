@@ -130,7 +130,7 @@ Geoff import of in.geoff created 3 entities.
 
 Populate your database from [GraphML](http://graphml.graphdrawing.org/) files. GraphML is an XML file format used to describe graphs.
 
-`import-graphml [-i in.xml] [-t REL_TYPE] [-b 20000] [-c]`
+`import-graphml [-i in.xml] [-r REL_TYPE] [-b 20000] [-c] [-t]`
 
 - -i in.xml: graphml file (or URL)
 - -r REL_TYPE default relationship-type for relationships without a label attribute
@@ -176,10 +176,12 @@ GraphML import created 3 entities.
 
 Export your Neo4j graph database to [GraphML](http://graphml.graphdrawing.org/) files. GraphML is an XML file format used to describe graphs. Can be used to import and visualize your graph in [Gephi](http://gephi.org).
 
-`export-graphml [-o out.graphml] [-t]`
+`export-graphml [-o out.graphml] [-t] [-r] [match (n:Foo)-[r]->() return n,r]`
 
 - -o out.graphml: graphml file to write to
 - -t write types, do a first pass over the data to determine property-types and write them to the graphml header
+- -r add all nodes of selected relationships
+- optional cypher query to select a subgraph to export
 
 Example output file: out.graphml
 
@@ -192,8 +194,8 @@ Example output file: out.graphml
 <graph id="G" edgedefault="directed">
 <key id="name" for="node" attr.name="name" attr.type="string"/>
 <key id="count" for="edge" attr.name="count" attr.type="int"/>
-<node id="n0" labels="FOO" ><data key="labels">FOO</data><data key="name">John Doe</data></node>
-<node id="n1" labels="FOO" ><data key="labels">FOO</data><data key="name">Jane Doe</data></node>
+<node id="n0" labels=":FOO" ><data key="labels">:FOO</data><data key="name">John Doe</data></node>
+<node id="n1" labels=":FOO" ><data key="labels">:FOO</data><data key="name">Jane Doe</data></node>
 <edge id="e0" source="n0" target="n1" label="KNOWS"><data key="label">KNOWS</data><data key="count">0</data></edge>
 <edge id="e1" source="n1" target="n0" label="KNOWS"><data key="label">KNOWS</data><data key="count">1</data></edge>
 </graph>

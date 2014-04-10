@@ -7,6 +7,7 @@ import org.neo4j.cypher.export.SubGraph;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.util.ElementCounter;
 import org.neo4j.shell.tools.imp.util.Reporter;
 

@@ -2,7 +2,7 @@ package org.neo4j.shell.tools.imp.format.graphml;
 
 import org.neo4j.cypher.export.SubGraph;
 import org.neo4j.graphdb.*;
-import org.neo4j.shell.tools.imp.format.Config;
+import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.util.MetaInformation;
 import org.neo4j.shell.tools.imp.util.Reporter;
 

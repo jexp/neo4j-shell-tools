@@ -1,6 +1,9 @@
-package org.neo4j.shell.tools.imp.format;
+package org.neo4j.shell.tools.imp.util;
 
 import org.neo4j.shell.AppCommandParser;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author mh
@@ -17,6 +20,20 @@ public class Config {
     private String delim = DEFAULT_DELIM;
     private boolean quotes;
     private boolean types = false;
+
+    public static String extractQuery(AppCommandParser parser) {
+        String line = parser.getLineWithoutApp().trim();
+        Map<String, String> options = new HashMap<String, String>(parser.options());
+        while (!options.isEmpty() && line.startsWith("-")) {
+            String option = options.remove(line.substring(1, 2));
+            int offset = option!=null ? 3 + option.length() : 2;
+            if (option!=null && !option.isEmpty() && option.trim().isEmpty()) offset+=2; // for quoted space or tab
+            int idx = line.indexOf(" ", offset);
+            if (idx != -1) line = line.substring(idx+1).trim();
+            else if (offset >= line.trim().length()) line = "";
+        }
+        return line.trim();
+    }
 
     public int getBatchSize() {
         return batchSize;
