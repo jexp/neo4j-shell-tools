@@ -178,7 +178,7 @@ public class XmlGraphMLReader {
                         if (value != null) {
                             if (this.labels && isNode && id.equals("labels")) {
                                 addLabels((Node)last,value.toString());
-                            } else {
+                            } else if (!this.labels || isNode || !id.equals("label")) {
                                 last.setProperty(key.name, value);
                                 if (reporter != null) reporter.update(0, 0, 1);
                             }
