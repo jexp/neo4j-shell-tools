@@ -239,18 +239,15 @@ An import of [@chrisdiehl](https://twitter.com/chrisdiehl)'s [Enron Dataset](htt
 ### Manual Build & Install
 
 ````
-git clone https://github.com/gquercini/neo4j-shell-tools.git
+git clone git@github.com:jexp/neo4j-shell-tools.git
 cd neo4j-shell-tools
-mvn -DskipTests clean package dependency:copy-dependencies
-
-(tests fails somehow due to the absence of a file import.csv, check the issues in the original project)
-
+mvn clean package dependency:copy-dependencies
 ````
 
 Then copy the jars that get generated into the neo4j lib directory:
 
 ````
-cp target/import-tools-2.0-SNAPSHOT.jar target/dependency/opencsv-2.3.jar target/dependency/geoff-0.5.0.jar target/dependency/mapdb-0.9.3.jar /path/to/neo4j-community-2.0.0/lib
+cp target/import-tools-2.0-SNAPSHOT.jar target/dependency/opencsv-2.3.jar target/dependency/neo4j-geoff-1.7-SNAPSHOT.jar target/dependency/mapdb-0.9.3.jar /path/to/neo4j-community-2.0.0-M05/lib
 ````
 
 or make those two files available on your neo4j-shell classpath
