@@ -17,51 +17,62 @@ import static org.neo4j.helpers.collection.Iterables.join;
  */
 public class MetaInformation {
 
-    public static Map<String,Class> collectPropTypesForNodes(SubGraph graph) {
-        Map<String,Class> propTypes = new LinkedHashMap<>();
-        for (Node node : graph.getNodes()) {
-            updateKeyTypes(propTypes, node);
-        }
-        return propTypes;
-    }
-    public static Map<String,Class> collectPropTypesForRelationships(SubGraph graph) {
-        Map<String,Class> propTypes = new LinkedHashMap<>();
-        for (Relationship node : graph.getRelationships()) {
-            updateKeyTypes(propTypes, node);
-        }
-        return propTypes;
-    }
+	public static Map<String,Class> collectPropTypesForNodes(SubGraph graph) {
+		Map<String,Class> propTypes = new LinkedHashMap<>();
+		for (Node node : graph.getNodes()) {
+			updateKeyTypes(propTypes, node);
+		}
+		return propTypes;
+	}
+	public static Map<String,Class> collectPropTypesForRelationships(SubGraph graph) {
+		Map<String,Class> propTypes = new LinkedHashMap<>();
+		for (Relationship node : graph.getRelationships()) {
+			updateKeyTypes(propTypes, node);
+		}
+		return propTypes;
+	}
 
-    private static void updateKeyTypes(Map<String, Class> keyTypes, PropertyContainer pc) {
-        for (String prop : pc.getPropertyKeys()) {
-            Object value = pc.getProperty(prop);
-            Class storedClass = keyTypes.get(prop);
-            if (storedClass==null) {
-                keyTypes.put(prop,value.getClass());
-                continue;
-            }
-            if (storedClass == void.class || storedClass.equals(value.getClass())) continue;
-            keyTypes.put(prop, void.class);
-        }
-    }
+	private static void updateKeyTypes(Map<String, Class> keyTypes, PropertyContainer pc) {
+		for (String prop : pc.getPropertyKeys()) {
+			Object value = pc.getProperty(prop);
+			Class storedClass = keyTypes.get(prop);
+			if (storedClass==null) {
+				keyTypes.put(prop,value.getClass());
+				continue;
+			}
+			if (storedClass == void.class || storedClass.equals(value.getClass())) continue;
+			keyTypes.put(prop, void.class);
+		}
+	}
 
-    public final static Set<String> GRAPHML_ALLOWED = new HashSet<>(asList("boolean", "int", "long", "float", "double", "string"));
+	public final static Set<String> GRAPHML_ALLOWED = new HashSet<>(asList("boolean", "int", "long", "float", "double", "string"));
 
-    public static String typeFor(Class value, Set<String> allowed) {
-        if (value == void.class) return null;
-        if (value.isArray()) return null; // TODO arrays
-        String name = value.getSimpleName().toLowerCase();
-        if (name.equals("integer")) name="int";
-        if (allowed==null || allowed.contains(name)) return name;
-        if (Number.class.isAssignableFrom(value)) return "int";
-        return null;
-    }
+	// modified by gquercini to add array support
+	public static String typeFor(Class value, Set<String> allowed) {
+		if (value == void.class) return null;
+		
+		// modified by gquercini to add array support
+		String name;
+		if (value.isArray())  
+			name = value.getComponentType().getSimpleName().toLowerCase(); 
+		else
+			name = value.getSimpleName().toLowerCase();
+		
+		if (name.equals("integer")) name="int";
+		
+		if (allowed==null || allowed.contains(name)) return value.isArray() ? "a_" + name : name;
+		if (Number.class.isAssignableFrom(value)) return value.isArray() ? "a_int" : "int";
+		
+		
+		
+		return null;
+	}
 
-    public static String getLabelsString(Node node) {
-        Iterator<Label> it = node.getLabels().iterator();
-        if (it.hasNext()) {
-            return ":" + join(":", it);
-        }
-        return "";
-    }
+	public static String getLabelsString(Node node) {
+		Iterator<Label> it = node.getLabels().iterator();
+		if (it.hasNext()) {
+			return ":" + join(":", it);
+		}
+		return "";
+	}
 }
