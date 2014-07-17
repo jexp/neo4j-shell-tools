@@ -4,8 +4,8 @@ neo4j-shell-tools adds a bunch of commands to [neo4j-shell](http://docs.neo4j.or
 
 ### What's new
 
-* Added the support for array properties to the (#graphml-import) and (#graphml-export) commands.
-* Modified the (#graphml-export) command so that node/edge properties with empty values are not exported.
+* Added the support for array properties to the [GraphML import](#graphml-import) and [GraphML export](#graphml-export) commands.
+* Modified the [GraphML export](#graphml-export) command so that node/edge properties with empty values are not exported.
 * Modified the POM.xml so that maven correctly finds the geoff jar file.
 
 
