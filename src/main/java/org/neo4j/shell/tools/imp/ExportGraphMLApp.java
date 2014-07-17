@@ -26,60 +26,60 @@ import java.io.FileWriter;
  */
 public class ExportGraphMLApp extends AbstractApp {
 
-    {
-        addOptionDefinition( "o", new OptionDefinition( OptionValueType.MUST,
-                "Output GraphML file" ) );
-        addOptionDefinition( "t", new OptionDefinition( OptionValueType.MAY,
-                "Write key types upfront (double pass)" ) );
-        addOptionDefinition( "r", new OptionDefinition( OptionValueType.MAY,
-                "Add all nodes of selected relationships" ) );
-    }
+	{
+		addOptionDefinition( "o", new OptionDefinition( OptionValueType.MUST,
+				"Output GraphML file" ) );
+		addOptionDefinition( "t", new OptionDefinition( OptionValueType.MAY,
+				"Write key types upfront (double pass)" ) );
+		addOptionDefinition( "r", new OptionDefinition( OptionValueType.MAY,
+				"Add all nodes of selected relationships" ) );
+	}
 
-    private ExecutionEngine engine;
-    protected ExecutionEngine getEngine() {
-        if (engine==null) engine=new ExecutionEngine(getServer().getDb(), StringLogger.SYSTEM);
-        return engine;
-    }
+	private ExecutionEngine engine;
+	protected ExecutionEngine getEngine() {
+		if (engine==null) engine=new ExecutionEngine(getServer().getDb(), StringLogger.SYSTEM);
+		return engine;
+	}
 
-    @Override
-    public String getName() {
-        return "export-graphml";
-    }
-
-
-    @Override
-    public GraphDatabaseShellServer getServer() {
-        return (GraphDatabaseShellServer) super.getServer();
-    }
-
-    private SubGraph cypherResultSubGraph(String query, boolean relsBetween) {
-        try (Transaction tx = getServer().getDb().beginTx()) {
-            ExecutionResult result = getEngine().execute(query);
-            SubGraph subGraph = CypherResultSubGraph.from(result, getServer().getDb(), relsBetween);
-            tx.success();
-            return subGraph;
-        }
-    }
+	@Override
+	public String getName() {
+		return "export-graphml";
+	}
 
 
-    @Override
-    public Continuation execute(AppCommandParser parser, Session session, Output out) throws Exception {
-        Config config = Config.fromOptions(parser);
+	@Override
+	public GraphDatabaseShellServer getServer() {
+		return (GraphDatabaseShellServer) super.getServer();
+	}
 
-        String fileName = parser.option("o", null);
-        boolean relsBetween = parser.options().containsKey("r");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+	private SubGraph cypherResultSubGraph(String query, boolean relsBetween) {
+		try (Transaction tx = getServer().getDb().beginTx()) {
+			ExecutionResult result = getEngine().execute(query);
+			SubGraph subGraph = CypherResultSubGraph.from(result, getServer().getDb(), relsBetween);
+			tx.success();
+			return subGraph;
+		}
+	}
 
-        ProgressReporter reporter = new ProgressReporter(null, out);
 
-        GraphDatabaseService db = getServer().getDb();
+	@Override
+	public Continuation execute(AppCommandParser parser, Session session, Output out) throws Exception {
+		Config config = Config.fromOptions(parser);
 
-        Format exportFormat = new XmlGraphMLFormat(db);
-        String query = Config.extractQuery(parser);
-        SubGraph graph = query.isEmpty() ? new DatabaseSubGraph(db) : cypherResultSubGraph(query,relsBetween);
-        exportFormat.dump(graph, writer, reporter, config);
-        writer.close();
-        reporter.progress("Wrote to GraphML-file " + fileName);
-        return Continuation.INPUT_COMPLETE;
-    }
+		String fileName = parser.option("o", null);
+		boolean relsBetween = parser.options().containsKey("r");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+
+		ProgressReporter reporter = new ProgressReporter(null, out);
+
+		GraphDatabaseService db = getServer().getDb();
+
+		Format exportFormat = new XmlGraphMLFormat(db);
+		String query = Config.extractQuery(parser);
+		SubGraph graph = query.isEmpty() ? new DatabaseSubGraph(db) : cypherResultSubGraph(query,relsBetween);
+		exportFormat.dump(graph, writer, reporter, config);
+		writer.close();
+		reporter.progress("Wrote to GraphML-file " + fileName);
+		return Continuation.INPUT_COMPLETE;
+	}
 }
