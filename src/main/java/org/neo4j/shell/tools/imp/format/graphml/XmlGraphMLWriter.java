@@ -163,7 +163,6 @@ public class XmlGraphMLWriter {
 
     // Modified so that empty properties (empty string value) are not exported.
     private void writeData(XMLStreamWriter writer, String prop, Object value) throws IOException, XMLStreamException {
-    	
     	if (value == null) return;
     	String valueString = value.toString().trim();
 		if ( valueString.length() == 0 ) return;
