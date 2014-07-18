@@ -49,11 +49,15 @@ public class MetaInformation {
 
     public static String typeFor(Class value, Set<String> allowed) {
         if (value == void.class) return null;
-        if (value.isArray()) return null; // TODO arrays
-        String name = value.getSimpleName().toLowerCase();
+        //if (value.isArray()) return null; // TODO arrays
+        String name;
+        if (value.isArray())  
+			name = value.getComponentType().getSimpleName().toLowerCase(); 
+        else
+        	name = value.getSimpleName().toLowerCase();
         if (name.equals("integer")) name="int";
-        if (allowed==null || allowed.contains(name)) return name;
-        if (Number.class.isAssignableFrom(value)) return "int";
+        if (allowed==null || allowed.contains(name)) return value.isArray() ? "a_" + name : name;
+        if (Number.class.isAssignableFrom(value)) return value.isArray() ? "a_int" : "int";
         return null;
     }
 

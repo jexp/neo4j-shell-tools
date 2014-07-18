@@ -9,8 +9,10 @@ import org.neo4j.shell.tools.imp.util.Reporter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.neo4j.helpers.collection.Iterables.join;
@@ -127,16 +129,47 @@ public class XmlGraphMLWriter {
         int count = 0;
         for (String prop : node.getPropertyKeys()) {
             Object value = node.getProperty(prop);
-            writeData(writer, prop, value);
+            if ( value.getClass().isArray() )
+            	writeArrayData(writer, prop, value);
+            else
+            		writeData(writer, prop, value);
             count++;
         }
         return count;
     }
+    
+    private void writeArrayData(XMLStreamWriter writer, String prop, Object value) throws IOException, XMLStreamException {
 
+		if ( value == null ) return;
+		int length = Array.getLength(value);
+		if (length == 0) return;
+		ArrayList<String> arrayList = new ArrayList<String>();
+		for(int i = 0; i < length; i += 1)
+		{
+			String v = Array.get(value, i).toString().trim();
+			if ( v.length() == 0 ) continue;
+			arrayList.add(v);
+		}
+		if ( arrayList.size() == 0 ) return;
+		writer.writeStartElement("array-data");
+		writer.writeAttribute("key", prop);
+		for ( String s: arrayList ) {
+			writer.writeStartElement("item");
+			writer.writeCharacters(s);
+			writer.writeEndElement();
+		}
+		writer.writeEndElement();
+	}
+
+    // Modified so that empty properties (empty string value) are not exported.
     private void writeData(XMLStreamWriter writer, String prop, Object value) throws IOException, XMLStreamException {
-        writer.writeStartElement("data");
+    	
+    	if (value == null) return;
+    	String valueString = value.toString().trim();
+		if ( valueString.length() == 0 ) return;
+    	writer.writeStartElement("data");
         writer.writeAttribute("key", prop);
-        if (value != null) writer.writeCharacters(value.toString());
+        if (value != null) writer.writeCharacters(valueString);
         writer.writeEndElement();
     }
 
