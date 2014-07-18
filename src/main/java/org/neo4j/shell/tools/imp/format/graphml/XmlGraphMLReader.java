@@ -61,19 +61,49 @@ public class XmlGraphMLReader {
             Object parse(String value) {
                 return Boolean.valueOf(value);
             }
-        }, INT() {
+        }, A_BOOLEAN() {
+			Object parse(Object value) {
+				Boolean[] arrayValue = new Boolean[((ArrayList<Object>)value).size()];
+				return ((ArrayList<Object>)value).toArray(arrayValue);
+
+			}
+		},INT() {
             Object parse(String value) {
                 return Integer.parseInt(value);
             }
-        }, LONG() {
+        }, A_INT() {
+			Object parse(Object value) {
+				Integer[] arrayValue = new Integer[((ArrayList<Object>)value).size()];
+				return ((ArrayList<Object>)value).toArray(arrayValue);
+
+			}
+		}, LONG() {
             Object parse(String value) {
                 return Long.parseLong(value);
             }
-        }, FLOAT() {
+        }, A_LONG() {
+			Object parse(Object value) {
+				Long[] arrayValue = new Long[((ArrayList<Object>)value).size()];
+				return ((ArrayList<Object>)value).toArray(arrayValue);
+
+			}
+		}, FLOAT() {
             Object parse(String value) {
                 return Float.parseFloat(value);
             }
-        }, DOUBLE() {
+        }, A_FLOAT() {
+			Object parse(Object value) {
+				Float[] arrayValue = new Float[((ArrayList<Object>)value).size()];
+				return ((ArrayList<Object>)value).toArray(arrayValue);
+
+			}
+		}, A_DOUBLE() {
+			Object parse(Object value) {
+				Double[] arrayValue = new Double[((ArrayList<Object>)value).size()];
+				return ((ArrayList<Object>)value).toArray(arrayValue);
+
+			}
+		}, DOUBLE() {
             Object parse(String value) {
                 return Double.parseDouble(value);
             }
@@ -81,8 +111,14 @@ public class XmlGraphMLReader {
         }, STRING() {
             Object parse(String value) {
                 return value;
-            }
-        };
+            } 
+        } , A_STRING() {
+			Object parse(Object value) {
+				String[] arrayValue = new String[((ArrayList<Object>)value).size()];
+				return ((ArrayList<Object>)value).toArray(arrayValue);
+
+			}
+		};
 
         abstract Object parse(String value);
 
