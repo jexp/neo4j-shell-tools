@@ -10,9 +10,12 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,8 +61,8 @@ public class XmlGraphMLReader {
 
     enum Type {
         BOOLEAN() {
-            Object parse(String value) {
-                return Boolean.valueOf(value);
+            Object parse(Object value) {
+                return Boolean.valueOf((String)value);
             }
         }, A_BOOLEAN() {
 			Object parse(Object value) {
@@ -68,8 +71,8 @@ public class XmlGraphMLReader {
 
 			}
 		},INT() {
-            Object parse(String value) {
-                return Integer.parseInt(value);
+            Object parse(Object value) {
+                return Integer.parseInt((String)value);
             }
         }, A_INT() {
 			Object parse(Object value) {
@@ -78,8 +81,8 @@ public class XmlGraphMLReader {
 
 			}
 		}, LONG() {
-            Object parse(String value) {
-                return Long.parseLong(value);
+            Object parse(Object value) {
+                return Long.parseLong((String)value);
             }
         }, A_LONG() {
 			Object parse(Object value) {
@@ -88,8 +91,8 @@ public class XmlGraphMLReader {
 
 			}
 		}, FLOAT() {
-            Object parse(String value) {
-                return Float.parseFloat(value);
+            Object parse(Object value) {
+                return Float.parseFloat((String)value);
             }
         }, A_FLOAT() {
 			Object parse(Object value) {
@@ -104,12 +107,12 @@ public class XmlGraphMLReader {
 
 			}
 		}, DOUBLE() {
-            Object parse(String value) {
-                return Double.parseDouble(value);
+            Object parse(Object value) {
+                return Double.parseDouble((String)value);
             }
 
         }, STRING() {
-            Object parse(String value) {
+            Object parse(Object value) {
                 return value;
             } 
         } , A_STRING() {
@@ -120,7 +123,7 @@ public class XmlGraphMLReader {
 			}
 		};
 
-        abstract Object parse(String value);
+        abstract Object parse(Object value);
 
         public static Type forType(String type) {
             return valueOf(type.trim().toUpperCase());
@@ -153,6 +156,11 @@ public class XmlGraphMLReader {
             if (input == null || input.trim().isEmpty()) return defaultValue;
             return type.parse(input);
         }
+        
+        public Object parseValue(ArrayList<Object> input) {
+			if (input == null || input.size() == 0) return defaultValue;
+			return type.parse(input);
+		}
     }
 
     public static final QName ID = QName.valueOf("id");
@@ -174,6 +182,9 @@ public class XmlGraphMLReader {
         inputFactory.setProperty("javax.xml.stream.isCoalescing", true);
         XMLEventReader reader = inputFactory.createXMLEventReader(input);
         PropertyContainer last = null;
+        ArrayList<Object> array = null;
+		Key arrayKey = null;
+		Type arrayComponentType = null;
         Map<String, Key> nodeKeys = new HashMap<>();
         Map<String, Key> relKeys = new HashMap<>();
         int count = 0;
@@ -221,6 +232,29 @@ public class XmlGraphMLReader {
                         }
                         continue;
                     }
+                 	if( name.equals("array-data") ) {
+						if( last == null ) continue;
+						
+						String id = getAttribute(element, KEY);
+						boolean isNode = last instanceof Node;
+						Key key = isNode ? nodeKeys.get(id) : relKeys.get(id);
+						if (key == null) key = Key.defaultKey(id, isNode);
+						array = new ArrayList<Object>();
+						arrayKey = key;
+						arrayComponentType = Type.forType(arrayKey.type.name().substring(2));
+						continue;
+						
+					}
+					if( name.equals("item") ) {
+						if( array == null ) continue;
+						XMLEvent next = peek(reader);
+						if (next.isCharacters()) 
+						{
+							Object value = arrayComponentType.parse(reader.nextEvent().asCharacters().getData());
+							array.add(value);
+						}
+						continue;
+					}
                     if (name.equals("node")) {
                         tx.increment();
                         String id = getAttribute(element, ID);
@@ -253,6 +287,18 @@ public class XmlGraphMLReader {
                         continue;
                     }
                 }
+                else
+					if ( event.isEndElement() ) {
+						EndElement element = event.asEndElement();
+						String name = element.getName().getLocalPart();
+						if( name.equals("array-data") ) {
+							last.setProperty(arrayKey.name, arrayKey.parseValue(array));
+							if (reporter != null) reporter.update(0, 0, 1);
+							array = null;
+							arrayKey = null;
+							arrayComponentType = null;
+						}
+					}
             }
         }
         return count;
