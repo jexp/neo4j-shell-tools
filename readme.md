@@ -129,6 +129,7 @@ Geoff import of in.geoff created 3 entities.
 #### GraphML Import
 
 Populate your database from [GraphML](http://graphml.graphdrawing.org/) files. GraphML is an XML file format used to describe graphs.
+Array properties are supported.
 
 `import-graphml [-i in.xml] [-r REL_TYPE] [-b 20000] [-c] [-t]`
 
@@ -175,6 +176,7 @@ GraphML import created 3 entities.
 #### GraphML Export
 
 Export your Neo4j graph database to [GraphML](http://graphml.graphdrawing.org/) files. GraphML is an XML file format used to describe graphs. Can be used to import and visualize your graph in [Gephi](http://gephi.org).
+Array properties are supported.
 
 `export-graphml [-o out.graphml] [-t] [-r] [match (n:Foo)-[r]->() return n,r]`
 
