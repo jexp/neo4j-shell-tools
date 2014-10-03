@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by mh on 10.07.13.

@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
 
-import static org.neo4j.helpers.collection.Iterables.join;
 import static org.neo4j.shell.tools.imp.util.MetaInformation.getLabelsString;
 
 /**

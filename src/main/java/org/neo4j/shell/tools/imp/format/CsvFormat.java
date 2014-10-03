@@ -14,7 +14,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.*;
 
-import static org.neo4j.helpers.collection.Iterables.join;
 import static org.neo4j.shell.tools.imp.util.MetaInformation.collectPropTypesForNodes;
 import static org.neo4j.shell.tools.imp.util.MetaInformation.collectPropTypesForRelationships;
 import static org.neo4j.shell.tools.imp.util.MetaInformation.getLabelsString;
@@ -48,7 +47,7 @@ public class CsvFormat implements Format {
     }
 
     private Collection<String> generateHeader(Map<String,Class> nodePropTypes, String...starters) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         Collections.addAll(result, starters);
         for (Map.Entry<String, Class> entry : nodePropTypes.entrySet()) {
             String type = MetaInformation.typeFor(entry.getValue(), null);

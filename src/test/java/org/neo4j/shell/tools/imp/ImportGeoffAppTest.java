@@ -13,7 +13,6 @@ import org.neo4j.test.TestGraphDatabaseFactory;
 import java.io.*;
 import java.rmi.RemoteException;
 import java.util.Collections;
-import java.util.Scanner;
 
 import static org.junit.Assert.*;
 

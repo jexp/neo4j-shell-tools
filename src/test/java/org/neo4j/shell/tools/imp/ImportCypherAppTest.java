@@ -90,6 +90,7 @@ public class ImportCypherAppTest {
         }
     }
 
+    @Ignore("Testfile 'import.csv' missing in git")
     @Test
     public void testRunWithInputFile2() throws Exception {
         assertCommand(client, "import-cypher -d \"\\t\" -i import.csv create (n {name:{Trackmbid}}) return n.name as name",
