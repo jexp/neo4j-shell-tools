@@ -10,8 +10,6 @@ import org.neo4j.shell.tools.imp.util.Reporter;
 import java.io.Reader;
 import java.io.Writer;
 
-import static org.neo4j.helpers.collection.Iterables.join;
-
 /**
  * @author mh
  * @since 21.01.14

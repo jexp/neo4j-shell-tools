@@ -2,9 +2,7 @@ package org.neo4j.shell.tools.imp.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PipedOutputStream;
 import java.io.Writer;
-import java.nio.charset.Charset;
 
 /**
  * @author mh

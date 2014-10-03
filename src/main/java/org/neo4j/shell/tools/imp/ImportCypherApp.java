@@ -9,7 +9,6 @@ import org.neo4j.kernel.impl.util.StringLogger;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
-import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.util.*;
 
 import java.io.*;
@@ -200,7 +199,7 @@ public class ImportCypherApp extends AbstractApp {
 
     private Map<String, Object> createParams(CSVReader reader) throws IOException {
         String[] header = reader.readNext();
-        Map<String,Object> params=new LinkedHashMap<String,Object>();
+        Map<String,Object> params=new LinkedHashMap<>();
         for (String name : header) {
             params.put(name,null);
         }

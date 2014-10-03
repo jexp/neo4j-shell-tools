@@ -23,7 +23,7 @@ public class Config {
 
     public static String extractQuery(AppCommandParser parser) {
         String line = parser.getLineWithoutApp().trim();
-        Map<String, String> options = new HashMap<String, String>(parser.options());
+        Map<String, String> options = new HashMap<>(parser.options());
         while (!options.isEmpty() && line.startsWith("-")) {
             String option = options.remove(line.substring(1, 2));
             int offset = option!=null ? 3 + option.length() : 2;
