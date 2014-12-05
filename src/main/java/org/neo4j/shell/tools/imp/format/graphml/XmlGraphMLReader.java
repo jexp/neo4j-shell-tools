@@ -87,6 +87,7 @@ public class XmlGraphMLReader {
         abstract Object parse(String value);
 
         public static Type forType(String type) {
+            if (type==null) return STRING;
             return valueOf(type.trim().toUpperCase());
         }
     }

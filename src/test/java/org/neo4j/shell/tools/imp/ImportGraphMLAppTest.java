@@ -3,6 +3,7 @@ package org.neo4j.shell.tools.imp;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.ShellException;
@@ -30,6 +31,23 @@ public class ImportGraphMLAppTest {
     public void testRunWithInputFile() throws Exception {
         String path = getClass().getResource("/graphml-with-attributes.xml").getPath();
         runImport(path);
+
+    }
+    @Test
+    public void testRunWithYedFile() throws Exception {
+        String path = getClass().getResource("/yed.xml").getPath();
+        assertCommand(client,"import-graphml -t -i " + path +" -b 20000 -r UNKNOWN -c",
+                "GraphML-Import file "+ path +" rel-type UNKNOWN batch-size 20000 use disk-cache true",
+                "finish after 1 row(s)",
+                "GraphML import created 1 entities.");
+        try (Transaction tx = db.beginTx()) {
+            Node node = db.getNodeById(0);
+            for (String prop : node.getPropertyKeys()) {
+                System.out.println("prop = " + prop+" "+node.getProperty(prop));
+            }
+//            assertEquals("d1", node.getProperty("value"));
+            tx.success();
+        }
     }
 
     @Test

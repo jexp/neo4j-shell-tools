@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?><graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">
+<key attr.name="value" attr.type="string" for="node" id="d1"/>
+<key for="node" id="d2" yfiles.type="nodegraphics"/>
+<graph edgedefault="directed" id="G">
+<node id="n0"><data key="d1"/></node>
+</graph></graphml>
+
