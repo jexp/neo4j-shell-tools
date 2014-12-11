@@ -135,7 +135,32 @@ public class XmlGraphMLWriter {
     private void writeData(XMLStreamWriter writer, String prop, Object value) throws IOException, XMLStreamException {
         writer.writeStartElement("data");
         writer.writeAttribute("key", prop);
-        if (value != null) writer.writeCharacters(value.toString());
+        ArrayList<String> val_arr = new ArrayList<String>();
+        String val;
+        if (value != null) {
+        	if (value instanceof Collection<?>) {
+        		Collection<?> vals = (Collection<?>)value;
+        		for (Object v: vals) {
+        			val_arr.add(v.toString());
+        		}
+        		val = val_arr.toString();
+        	} else if (value instanceof Iterable<?>) {
+        		Iterable<?> vals = (Iterable<?>)value;
+        		for (Object v: vals) {
+        			val_arr.add(v.toString());
+        		}
+        		val = val_arr.toString();
+        	} else if (value instanceof Object[]) {
+        		Object[] vals = (Object[])value;
+        		for (Object v: vals) {
+        			val_arr.add(v.toString());
+        		}
+        		val = val_arr.toString();
+        	} else {
+        		val = value.toString();
+        	}
+        	writer.writeCharacters(val);
+        }
         writer.writeEndElement();
     }
 
