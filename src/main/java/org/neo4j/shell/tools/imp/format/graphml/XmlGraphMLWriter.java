@@ -135,25 +135,35 @@ public class XmlGraphMLWriter {
     private void writeData(XMLStreamWriter writer, String prop, Object value) throws IOException, XMLStreamException {
         writer.writeStartElement("data");
         writer.writeAttribute("key", prop);
-        ArrayList<String> val_arr = new ArrayList<String>();
-        String val;
+        String toWrite;
         if (value != null) {
-        	if (value instanceof Iterable<?>) {
-        		Iterable<?> vals = (Iterable<?>)value;
-        		for (Object v: vals) {
-        			val_arr.add(v.toString());
-        		}
-        		val = val_arr.toString();
-        	} else if (value instanceof Object[]) {
-        		Object[] vals = (Object[])value;
-        		for (Object v: vals) {
-        			val_arr.add(v.toString());
-        		}
-        		val = val_arr.toString();
+            if (value instanceof Iterable<?> || value instanceof Object[]) {
+                List<String> values = new ArrayList<String>();
+
+                if (value instanceof Iterable<?>) {
+                    Iterable<?> vals = (Iterable<?>)value;
+                    for (Object v: vals) {
+                        values.add(v.toString());
+                    }
+                } else {
+                    Object[] vals = (Object[])value;
+                    for (Object v: vals) {
+                        values.add(v.toString());
+                    }
+                }
+
+                toWrite = "";
+                if (!values.isEmpty()) {
+                    for (int i = 0; i < values.size()-1; i++) {
+                        toWrite += (values.get(i) + ",");
+                    }
+                    toWrite += values.get(values.size()-1);
+                }
         	} else {
-        		val = value.toString();
+                toWrite = value.toString();
         	}
-        	writer.writeCharacters(val);
+
+            writer.writeCharacters(toWrite);
         }
         writer.writeEndElement();
     }
