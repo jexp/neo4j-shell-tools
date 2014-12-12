@@ -138,13 +138,7 @@ public class XmlGraphMLWriter {
         ArrayList<String> val_arr = new ArrayList<String>();
         String val;
         if (value != null) {
-        	if (value instanceof Collection<?>) {
-        		Collection<?> vals = (Collection<?>)value;
-        		for (Object v: vals) {
-        			val_arr.add(v.toString());
-        		}
-        		val = val_arr.toString();
-        	} else if (value instanceof Iterable<?>) {
+        	if (value instanceof Iterable<?>) {
         		Iterable<?> vals = (Iterable<?>)value;
         		for (Object v: vals) {
         			val_arr.add(v.toString());
