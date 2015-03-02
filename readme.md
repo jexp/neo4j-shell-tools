@@ -41,7 +41,7 @@ Then choose a suitable import command, depending on how your data is structured.
 
 The auto index command is used to automatically create indexes on certain properties defined on nodes or relationships. This is in addition to the properties defined in 'conf/neo4j.properties'.
 
-`auto-index [-t Node|Relationship] [-r] name age title` 
+`auto-index [-t Node|Relationship] [-r] name age title`
 
 - -r stops indexing those properties
 
@@ -63,6 +63,7 @@ Populate your database with [write clauses](http://docs.neo4j.org/chunked/milest
 - -q: input/output file with quotes
 - -d delim: delim used to separate files (e.g. `-d " ", -d \t -d ,` )
 - -b size: batch size for intermediate commits
+- -s: skip writing headers when writing output to a csv file
 
 Example input file: [in.csv](examples/in.csv)
 

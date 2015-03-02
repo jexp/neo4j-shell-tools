@@ -34,6 +34,8 @@ public class ImportCypherApp extends AbstractApp {
                 "Delimeter, default is comma ',' " ) );
         addOptionDefinition( "q", new OptionDefinition( OptionValueType.NONE,
                 "Quoted Strings in file" ) );
+        addOptionDefinition( "s", new OptionDefinition( OptionValueType.NONE,
+                "Skip writing headers in output CSV/TSV file" ) );
     }
 
     private ExecutionEngine engine;
@@ -63,9 +65,10 @@ public class ImportCypherApp extends AbstractApp {
         CountingReader inputFile = FileUtils.readerFor(inputFileName);
         File outputFile = fileFor(parser, "o");
         String query = Config.extractQuery(parser);
+        boolean skipHeaders = parser.options().containsKey("s");
 
-        out.println(String.format("Query: %s infile %s delim '%s' quoted %s outfile %s batch-size %d",
-                                   query,name(inputFileName),delim,quotes,name(outputFile),batchSize));
+        out.println(String.format("Query: %s infile %s delim '%s' quoted %s outfile %s batch-size %d skip-headers %b",
+                                   query,name(inputFileName),delim,quotes,name(outputFile),batchSize, skipHeaders));
 
         CSVReader reader = createReader(inputFile, config);
 
@@ -73,7 +76,7 @@ public class ImportCypherApp extends AbstractApp {
 
         int count;
         if (reader==null) {
-            count = execute(query, writer);
+            count = execute(query, writer, config);
         } else {
             count = executeOnInput(reader, query, writer, config, new ProgressReporter(inputFile,out));
         }
@@ -106,9 +109,9 @@ public class ImportCypherApp extends AbstractApp {
         return config.isQuotes() ? new CSVReader(reader,config.getDelimChar(), Config.QUOTECHAR) : new CSVReader(reader,config.getDelimChar());
     }
 
-    private int execute(String query, CSVWriter writer) {
+    private int execute(String query, CSVWriter writer, Config config) {
         ExecutionResult result = getEngine().execute(query);
-        return writeResult(result, writer,true);
+        return writeResult(result, writer, config.writeHeaders());
     }
 
 
@@ -117,15 +120,15 @@ public class ImportCypherApp extends AbstractApp {
         Map<String, Type> types = extractTypes(params);
         Map<String, String> replacements = computeReplacements(params, query);
         String[] input;
-        boolean first = true;
+        boolean writeHeaders = config.writeHeaders();
         int outCount = 0;
         try (BatchTransaction tx = new BatchTransaction(getServer().getDb(),config.getBatchSize(),reporter)) {
             while ((input = reader.readNext()) != null) {
                 Map<String, Object> queryParams = update(params, types, input);
                 String newQuery = applyReplacements(query, replacements, queryParams);
                 ExecutionResult result = getEngine().execute(newQuery, queryParams);
-                outCount += writeResult(result, writer, first);
-                first = false;
+                outCount += writeResult(result, writer, writeHeaders);
+                writeHeaders = false;
                 ProgressReporter.update(result.getQueryStatistics(), reporter);
                 tx.increment();
             }
@@ -168,12 +171,12 @@ public class ImportCypherApp extends AbstractApp {
         return result;
     }
 
-    private int writeResult(ExecutionResult result, CSVWriter writer, boolean first) {
+    private int writeResult(ExecutionResult result, CSVWriter writer, boolean writeHeaders) {
         if (writer==null) return IteratorUtil.count(result);
         String[] cols = new String[result.columns().size()];
         result.columns().toArray(cols);
         String[] data = new String[cols.length];
-        if (first) {
+        if (writeHeaders) {
             writer.writeNext(cols);
         }
 
