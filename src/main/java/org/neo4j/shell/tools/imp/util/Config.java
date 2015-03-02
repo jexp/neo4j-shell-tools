@@ -20,6 +20,7 @@ public class Config {
     private String delim = DEFAULT_DELIM;
     private boolean quotes;
     private boolean types = false;
+    private boolean writeHeaders = true;
 
     public static String extractQuery(AppCommandParser parser) {
         String line = parser.getLineWithoutApp().trim();
@@ -59,6 +60,10 @@ public class Config {
         return types;
     }
 
+    public boolean writeHeaders() {
+        return writeHeaders;
+    }
+
     public static Config fromOptions(AppCommandParser parser) {
         Config config = new Config();
         config.silent = parser.options().containsKey("s");
@@ -66,6 +71,7 @@ public class Config {
         config.delim = delim(parser.option("d", String.valueOf(DEFAULT_DELIM)));
         config.quotes = parser.options().containsKey("q");
         config.types = parser.options().containsKey("t");
+        config.writeHeaders = !parser.options().containsKey("s");
         return config;
     }
 

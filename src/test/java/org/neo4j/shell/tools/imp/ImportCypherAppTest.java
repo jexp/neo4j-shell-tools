@@ -182,6 +182,19 @@ public class ImportCypherAppTest {
         }
     }
 
+    @Test
+    public void testRunWithOutputFileAndSkipHeaders() throws Exception {
+        assertCommand(client, "import-cypher -o out.csv -s start x=node(0,0) create n return id(n) as id",
+                "Query: start x=node(0,0) create n return id(n) as id infile (none) delim ',' quoted false outfile out.csv batch-size 1000 skip-headers true",
+                "Import statement execution created 2 rows of output.");
+        assertFile("1","2");
+        try (Transaction tx = db.beginTx()) {
+            assertNotNull(db.getNodeById(1));
+            assertNotNull(db.getNodeById(2));
+            tx.success();
+        }
+    }
+
     private void assertFile(String...expected) throws FileNotFoundException {
         File file = new File("out.csv");
         assertTrue("outfile exits",file.exists());
