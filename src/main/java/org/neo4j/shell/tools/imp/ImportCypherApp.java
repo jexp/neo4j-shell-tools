@@ -4,7 +4,10 @@ import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 import org.neo4j.cypher.javacompat.ExecutionEngine;
 import org.neo4j.cypher.javacompat.ExecutionResult;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Result;
 import org.neo4j.helpers.collection.IteratorUtil;
+import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.kernel.impl.util.StringLogger;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
@@ -36,10 +39,8 @@ public class ImportCypherApp extends AbstractApp {
                 "Quoted Strings in file" ) );
     }
 
-    private ExecutionEngine engine;
-    protected ExecutionEngine getEngine() {
-        if (engine==null) engine=new ExecutionEngine(getServer().getDb(), StringLogger.SYSTEM);
-        return engine;
+    protected GraphDatabaseService getEngine() {
+        return getServer().getDb();
     }
 
     @Override
@@ -107,7 +108,7 @@ public class ImportCypherApp extends AbstractApp {
     }
 
     private int execute(String query, CSVWriter writer) {
-        ExecutionResult result = getEngine().execute(query);
+        Result result = getEngine().execute(query);
         return writeResult(result, writer,true);
     }
 
@@ -123,7 +124,7 @@ public class ImportCypherApp extends AbstractApp {
             while ((input = reader.readNext()) != null) {
                 Map<String, Object> queryParams = update(params, types, input);
                 String newQuery = applyReplacements(query, replacements, queryParams);
-                ExecutionResult result = getEngine().execute(newQuery, queryParams);
+                Result result = getEngine().execute(newQuery, queryParams);
                 outCount += writeResult(result, writer, first);
                 first = false;
                 ProgressReporter.update(result.getQueryStatistics(), reporter);
@@ -168,7 +169,7 @@ public class ImportCypherApp extends AbstractApp {
         return result;
     }
 
-    private int writeResult(ExecutionResult result, CSVWriter writer, boolean first) {
+    private int writeResult(Result result, CSVWriter writer, boolean first) {
         if (writer==null) return IteratorUtil.count(result);
         String[] cols = new String[result.columns().size()];
         result.columns().toArray(cols);
@@ -178,7 +179,8 @@ public class ImportCypherApp extends AbstractApp {
         }
 
         int count=0;
-        for (Map<String, Object> row : result) {
+        while (result.hasNext()) {
+            Map<String, Object> row= result.next();
             writeRow(writer, cols, data, row);
             count++;
         }

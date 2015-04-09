@@ -1,3 +1,9 @@
+test-data
+test.xml
+*.db
+*.log
+*.zip
+*.properties
 *.iml
 .shell_history
 *.csv

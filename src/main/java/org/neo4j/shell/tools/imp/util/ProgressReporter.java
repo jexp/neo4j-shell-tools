@@ -1,6 +1,6 @@
 package org.neo4j.shell.tools.imp.util;
 
-import org.neo4j.cypher.javacompat.QueryStatistics;
+import org.neo4j.graphdb.QueryStatistics;
 import org.neo4j.shell.Output;
 
 import java.rmi.RemoteException;
@@ -48,8 +48,8 @@ public class ProgressReporter implements Reporter {
     public static void update(QueryStatistics queryStatistics, Reporter reporter) {
         if (queryStatistics.containsUpdates()) {
             reporter.update(
-                    queryStatistics.getNodesCreated() - queryStatistics.getDeletedNodes(),
-                    queryStatistics.getRelationshipsCreated() - queryStatistics.getDeletedRelationships(),
+                    queryStatistics.getNodesCreated() - queryStatistics.getNodesDeleted(),
+                    queryStatistics.getRelationshipsCreated() - queryStatistics.getRelationshipsDeleted(),
                     queryStatistics.getPropertiesSet());
         }
     }
