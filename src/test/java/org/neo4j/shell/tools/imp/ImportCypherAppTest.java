@@ -182,6 +182,14 @@ public class ImportCypherAppTest {
         }
     }
 
+    @Test
+    public void testToStringWithDouble() throws Exception {
+        assertCommand(client, "import-cypher -o out.csv return 10000000.0 as dec",
+                "Query: return 10000000.0 as dec infile (none) delim ',' quoted false outfile out.csv batch-size 1000",
+                "Import statement execution created 1 rows of output.");
+        assertFile("dec", "10000000,00");
+    }
+
     private void assertFile(String...expected) throws FileNotFoundException {
         File file = new File("out.csv");
         assertTrue("outfile exits",file.exists());
