@@ -197,6 +197,9 @@ public class ImportCypherApp extends AbstractApp {
 
     private String toString(Map<String, Object> row, String col) {
         Object value = row.get(col);
+        if (value instanceof Double) {
+            value = String.format("%.2f", value);
+        }
         return value == null ? null : value.toString();
     }
 
