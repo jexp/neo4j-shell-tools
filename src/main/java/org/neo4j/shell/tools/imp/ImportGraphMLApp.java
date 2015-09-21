@@ -1,6 +1,6 @@
 package org.neo4j.shell.tools.imp;
 
-import org.neo4j.kernel.GraphDatabaseAPI;
+import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
@@ -12,7 +12,8 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by mh on 04.07.13.
+ * @author mh
+ * @since 04.07.13
  */
 public class ImportGraphMLApp extends AbstractApp {
 
@@ -69,7 +70,7 @@ public class ImportGraphMLApp extends AbstractApp {
 
     private long execute(CountingReader reader, int batchSize, String relType, boolean diskSpillCache, boolean readLabels, Output out) throws XMLStreamException, IOException {
         try {
-            GraphDatabaseAPI db = getServer().getDb();
+            GraphDatabaseService db = getServer().getDb();
             ProgressReporter reporter = new ProgressReporter(reader, out);
             XmlGraphMLReader graphMLReader = new XmlGraphMLReader(db)
                     .batchSize(batchSize).relType(relType)

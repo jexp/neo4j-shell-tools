@@ -4,8 +4,8 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
-import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.format.GeoffFormat;
+import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.util.CountingReader;
 import org.neo4j.shell.tools.imp.util.FileUtils;
 import org.neo4j.shell.tools.imp.util.ProgressReporter;
@@ -13,7 +13,8 @@ import org.neo4j.shell.tools.imp.util.ProgressReporter;
 import java.io.IOException;
 
 /**
- * Created by mh on 04.07.13.
+ * @author mh
+ * @since 04.07.13
  */
 public class ImportGeoffApp extends AbstractApp {
 

@@ -2,26 +2,25 @@ package org.neo4j.shell.tools.imp;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-import org.neo4j.cypher.javacompat.ExecutionEngine;
-import org.neo4j.cypher.javacompat.ExecutionResult;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
 import org.neo4j.helpers.collection.IteratorUtil;
-import org.neo4j.kernel.GraphDatabaseAPI;
-import org.neo4j.kernel.impl.util.StringLogger;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
-import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.util.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Created by mh on 04.07.13.
+ * @author mh
+ * @since 04.07.13
  */
 public class ImportCypherApp extends AbstractApp {
 
@@ -205,7 +204,7 @@ public class ImportCypherApp extends AbstractApp {
 
     private Map<String, Object> createParams(CSVReader reader) throws IOException {
         String[] header = reader.readNext();
-        Map<String,Object> params=new LinkedHashMap<String,Object>();
+        Map<String,Object> params=new LinkedHashMap<>();
         for (String name : header) {
             params.put(name,null);
         }

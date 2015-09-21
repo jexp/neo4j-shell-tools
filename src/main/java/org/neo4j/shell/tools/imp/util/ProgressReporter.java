@@ -31,7 +31,7 @@ public class ProgressReporter implements Reporter {
 
     private void println(String message) {
         try {
-            out.println(message);
+            if (out!=null) out.println(message);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

@@ -22,7 +22,7 @@ public class Asserts {
         Iterator<String> it = out.iterator();
         for (String s : expected) {
             String output = it.next().trim();
-            if (s.isEmpty()) continue;
+            if (s==null || s.isEmpty()) continue;
             assertEquals(output+" should contain "+s,true,output.contains(s));
         }
     }

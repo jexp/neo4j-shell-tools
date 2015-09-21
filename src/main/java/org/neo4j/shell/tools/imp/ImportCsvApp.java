@@ -2,13 +2,11 @@ package org.neo4j.shell.tools.imp;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-import org.neo4j.cypher.export.SubGraph;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.ResourceIterable;
 import org.neo4j.helpers.collection.IteratorUtil;
-import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
@@ -19,10 +17,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Created by mh on 04.07.13.
+ * @author mh
+ * @since 04.07.13
  */
 public class ImportCsvApp extends AbstractApp {
 

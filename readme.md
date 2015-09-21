@@ -1,16 +1,14 @@
- *Please note that this tool was only developed to work with Neo4j, if you import/export to any other graph database you're on your own.*
-
 # Import data into your neo4j database from the neo4j-shell command
 
-neo4j-shell-tools adds a bunch of commands to [neo4j-shell](http://docs.neo4j.org/chunked/stable/shell.html) which allow you to insert data into a running [neo4j](http://www.neo4j.org/) database without any hassle.
+`neo4j-shell-tools` adds a number of commands to [neo4j-shell](http://neo4j.com/docs/stable/shell.html) which easily allow import and export data into running [Neo4j](http://www.neo4j.com/) database.
 
 ### Installation
 
 Download [neo4j-shell-tools_2.2.zip](http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_2.2.zip) and extract it in your
-neo4j server's lib directory e.g.
+Neo4j Server's lib directory e.g.
 
 ````
-cd /path/to/neo4j-community-2.2.0
+cd /path/to/neo4j-community-2.2.5
 curl http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_2.2.zip -o neo4j-shell-tools.zip
 unzip neo4j-shell-tools.zip -d lib
 ````
@@ -20,43 +18,36 @@ unzip neo4j-shell-tools.zip -d lib
 Restart neo4j and then launch the neo4j-shell:
 
 ````
-cd /path/to/neo4j-community-2.2.0
+cd /path/to/neo4j-community-2.2.5
 ./bin/neo4j restart
 ./bin/neo4j-shell
 ````
 
 That assumes a default neo4j instance running on port 7474. You can call `./bin/neo4j-shell --help` to get a list of other ways to connect to a neo4j instance.
 
-
 ### Importing workflow
 
-Before importing data, use the [Auto Index](#setup-auto-indexing) command to set up indexing so that you'll be able to find the data afterwards.
+Before importing data, make sure that you create the necessary [indexes or constraints](http://neo4j.com/docs/stable/cypher-schema.html) for your data, so that you can quickly access the starting points for your graph patterns afterwards.
+For instance:
+
+````
+create constraint on (p:Person) assert p.email is unique;
+create index on :Person(age);
+````
+
+
+### Import
 
 Then choose a suitable import command, depending on how your data is structured.
-* If your data is formatted as CSV and you want to use [cypher](http://docs.neo4j.org/chunked/milestone/cypher-query-lang.html) statements for importing it, use the [Cypher Import](#cypher-import) command.
-* If your data is in [geoff](http://nigelsmall.com/geoff) format, use the [Geoff Import](#geoff-import) command.
+* If your data is formatted as CSV and you want to use [cypher](http://neo4j.com/docs/stable/cypher-query-lang.html) statements for importing it, use the [Cypher Import](#cypher-import) command.
 * If your data is in [GraphML](http://graphml.graphdrawing.org/) format, use the [GraphML Import](#graphml-import) command.
-
-#### Setup auto indexing
-
-The auto index command is used to automatically create indexes on certain properties defined on nodes or relationships. This is in addition to the properties defined in 'conf/neo4j.properties'.
-
-`auto-index [-t Node|Relationship] [-r] name age title` 
-
-- -r stops indexing those properties
-
-Usage:
-
-````
-$ auto-index name age title
-Enabling auto-indexing of Node properties: [name, age, title]
-````
+* If your data is in [Geoff](http://nigelsmall.com/geoff) format, use the [Geoff Import](#geoff-import) command.
 
 #### Cypher Import
 
-Populate your database with [write clauses](http://docs.neo4j.org/chunked/milestone/query-write.html) in the [cypher](http://docs.neo4j.org/chunked/milestone/cypher-query-lang.html) query language.
+Populate your database with [write clauses](http://neo4j.com/docs/stable/query-write.html) in the [cypher](http://neo4j.com/docs/stable/cypher-query-lang.html) query language.
 
-`import-cypher [-i in.csv] [-o out.csv] [-d ,] [-q] [-b 10000] create (n {name: {name}, age: {age}}) return id(n) as id, n.name as name`
+`import-cypher [-i in.csv] [-o out.csv] [-d ,] [-q] [-b 10000] create (n:#{label} {name: {name}, age: {age}}) return id(n) as id, n.name as name`
 
 - -i file.csv: tab or comma separated input data file (or URL), with header. Header names are used as param-names. The cypher  statement will be executed one per row
 - -o file.csv: tab or comma separated output data file, all cypher result rows will be written to file, column labels become headers
@@ -174,6 +165,67 @@ Finished: nodes = 2 rels = 1 properties = 2 total time 16 ms
 GraphML import created 3 entities.
 ````
 
+### Export
+
+Choose a suitable export command, depending on your requirement for the exported data
+
+* To export your data as Cypher statements, use, use the [Cypher Export](#cypher-export) command.
+* To export your data as CSV, use the [Cypher Import](#cypher-import) command with the `-o file` option which will output the results of your queries into a CSV file.
+* To export your data as [GraphML](http://graphml.graphdrawing.org/), use the [GraphML Export](#graphml-export) command.
+
+#### Cypher Export
+
+If you have a populated database, you can dump it completely or partially (by using a Cypher statement) to a script-file which uses Cypher and neo4j-shell commands to control the import.
+
+The export order is:
+
+. Nodes batched in transactions
+. Schema information like indexes and constraints
+. Relationships by looking up nodes by primary keys and connecting them, also batched in transactions
+
+`export-cypher [-o export.cypher] [-r] [-b 10000] [MATCH (p:Person)-[r:ACTED_IN]->(m:Movie) RETURN *]`
+
+- -o file.cypher: output file for dump, if left blank the output is sent to the neo4j-shell output and has to be redirected
+- -b size: batch size for commit batches for nodes and relationships
+- -r add all nodes of selected relationships, also add relationships between selected nodes
+
+**Note:** 
+For nodes that don't have a unique constraint, a temporary label (`UNIQUE IMPORT LABEL`) and property (`UNIQUE IMPORT ID`) are added to allow later lookup in the relationship-generation section.
+A constraint for `UNIQUE IMPORT LABEL`(`UNIQUE IMPORT ID`) is added too. All, the constraint, the label and the property are removed at the end of the import script again.
+
+Example dump file:
+
+````
+export-cypher -r -o test.cypher match (n)-[r]->() return n,r
+
+// create nodes
+begin
+CREATE (:`UNIQUE IMPORT LABEL` {`UNIQUE IMPORT ID`:0});
+CREATE (:`User` {`age`:43, `name`:"User1"});
+commit
+
+// add schema
+begin
+CREATE INDEX ON :`User`(`age`);
+CREATE CONSTRAINT ON (node:`User`) ASSERT node.`name` IS UNIQUE;
+CREATE CONSTRAINT ON (node:`UNIQUE IMPORT LABEL`) ASSERT node.`UNIQUE IMPORT ID` IS UNIQUE;
+commit
+schema await
+
+// create relationships
+begin
+MATCH (n1:`UNIQUE IMPORT LABEL`{`UNIQUE IMPORT ID`:0}), (n2:`User`{`name`:"User1"}) CREATE (n1)-[:`KNOWS` {`since`:2011}]->(n2);
+commit
+
+// clean up temporary import keys
+begin
+MATCH (n:`UNIQUE IMPORT LABEL`)  WITH n LIMIT 1000 REMOVE n:`UNIQUE IMPORT LABEL` REMOVE n.`UNIQUE IMPORT ID`;
+commit
+begin
+DROP CONSTRAINT ON (node:`UNIQUE IMPORT LABEL`) ASSERT node.`UNIQUE IMPORT ID` IS UNIQUE;
+commit
+````
+
 #### GraphML Export
 
 Export your Neo4j graph database to [GraphML](http://graphml.graphdrawing.org/) files. GraphML is an XML file format used to describe graphs. Can be used to import and visualize your graph in [Gephi](http://gephi.org).
@@ -241,7 +293,24 @@ mvn clean package dependency:copy-dependencies
 Then copy the jars that get generated into the neo4j lib directory:
 
 ````
-cp target/import-tools-2.2*.jar target/dependency/opencsv-2.3.jar target/dependency/neo4j-geoff-1.7-SNAPSHOT.jar target/dependency/mapdb-0.9.3.jar /path/to/neo4j-community-2.2.0/lib
+cp target/import-tools-2.2*.jar target/dependency/opencsv-2.3.jar target/dependency/neo4j-geoff-1.7-SNAPSHOT.jar target/dependency/mapdb-0.9.3.jar /path/to/neo4j-community-2.2.5/lib
 ````
 
 or make those two files available on your neo4j-shell classpath
+
+#### Setup auto indexing
+
+**NOTE: Using the "old" auto-index is discouraged, except if you know what you're doing. Use the label-based schema indexes instead.**
+
+The auto index command is used to automatically create indexes on certain properties defined on nodes or relationships. This is in addition to the properties defined in 'conf/neo4j.properties'.
+
+`auto-index [-t Node|Relationship] [-r] name age title` 
+
+- -r stops indexing those properties
+
+Usage:
+
+````
+$ auto-index name age title
+Enabling auto-indexing of Node properties: [name, age, title]
+````
