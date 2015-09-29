@@ -93,7 +93,7 @@ public class MultiStatementCypherSubGraphExporterTest {
         Assert.assertEquals(
                 "begin\n" +
                         "CREATE (:`UNIQUE IMPORT LABEL` {`UNIQUE IMPORT ID`:0});\n" +
-                        "CREATE (:`User` {`age`:43, `name`:\"User1\", `height`:1.8, `kids`:[\"Jane\", \"Jake\"], `married`:true});\n" +
+                        "CREATE (:`User` {`age`:43, `name`:\"User1\", `height`:1.82, `kids`:[\"Jane\", \"Jake\"], `married`:true});\n" +
                         "commit\n" +
                         CONSTRAINT_SECTION +
                         "begin\n" +

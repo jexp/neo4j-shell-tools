@@ -300,7 +300,7 @@ public class MultiStatementCypherSubGraphExporter {
         return "[" + result.toString() + "]";
     }
 
-    private final NumberFormat decimalFormat = new DecimalFormat("#.#") {{
+    private final NumberFormat decimalFormat = new DecimalFormat() {{
 	   setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
     }};
 
