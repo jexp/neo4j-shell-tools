@@ -62,6 +62,6 @@ public class ImportCypherPerformanceTest {
     @Before
     public void setUp() throws RemoteException, ShellException {
         db = (GraphDatabaseAPI) new TestGraphDatabaseFactory().newImpermanentDatabase();
-        client = new SameJvmClient(Collections.<String, Serializable>emptyMap(), new GraphDatabaseShellServer(db));
+        client = new SameJvmClient(Collections.<String, Serializable>emptyMap(), new GraphDatabaseShellServer(db), new TestCtrlCHandler());
     }
 }

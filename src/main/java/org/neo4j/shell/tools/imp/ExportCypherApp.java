@@ -3,17 +3,13 @@ package org.neo4j.shell.tools.imp;
 import org.neo4j.cypher.export.CypherResultSubGraph;
 import org.neo4j.cypher.export.DatabaseSubGraph;
 import org.neo4j.cypher.export.SubGraph;
-import org.neo4j.cypher.javacompat.ExecutionEngine;
-import org.neo4j.cypher.javacompat.ExecutionResult;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.kernel.GraphDatabaseAPI;
-import org.neo4j.kernel.impl.util.StringLogger;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
-import org.neo4j.shell.tools.imp.format.*;
+import org.neo4j.shell.tools.imp.format.MultiStatementCypherSubGraphExporter;
 import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.util.ProgressReporter;
 

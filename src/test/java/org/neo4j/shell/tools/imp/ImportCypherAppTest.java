@@ -215,6 +215,6 @@ public class ImportCypherAppTest {
             db.createNode();
             tx.success();
         }
-        client = new SameJvmClient(Collections.<String, Serializable>emptyMap(), new GraphDatabaseShellServer(db));
+        client = new SameJvmClient(Collections.<String, Serializable>emptyMap(), new GraphDatabaseShellServer(db), new TestCtrlCHandler());
     }
 }
