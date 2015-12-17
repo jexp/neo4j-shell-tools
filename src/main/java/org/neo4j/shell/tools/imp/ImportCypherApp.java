@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -198,6 +199,9 @@ public class ImportCypherApp extends AbstractApp {
         Object value = row.get(col);
         if (value instanceof Double) {
             value = String.format("%.2f", value);
+        }
+        else if (value instanceof String[]) {
+          value = Arrays.toString((String[]) value);
         }
         return value == null ? null : value.toString();
     }
