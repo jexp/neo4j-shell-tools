@@ -14,9 +14,11 @@ public class Config {
     //    public static final int DEFAULT_BATCH_SIZE = 20000;
     public static final int DEFAULT_BATCH_SIZE = 1000; // work around cypher bug
     public static final String DEFAULT_DELIM = ",";
+    public static final String DEFAULT_ARRAY_DELIM = ";";
 
     private int batchSize = DEFAULT_BATCH_SIZE;
     private boolean silent = false;
+    private String arrayDelim = DEFAULT_ARRAY_DELIM;
     private String delim = DEFAULT_DELIM;
     private boolean quotes;
     private boolean types = false;
@@ -43,8 +45,16 @@ public class Config {
         return silent;
     }
 
+    public char getArrayDelimChar() {
+        return arrayDelim.charAt(0);
+    }
+
     public char getDelimChar() {
         return delim.charAt(0);
+    }
+
+    public String getArrayDelim() {
+        return arrayDelim;
     }
 
     public String getDelim() {
@@ -62,6 +72,7 @@ public class Config {
     public static Config fromOptions(AppCommandParser parser) {
         Config config = new Config();
         config.silent = parser.options().containsKey("s");
+        config.arrayDelim = delim(parser.option("a", String.valueOf(DEFAULT_ARRAY_DELIM)));
         config.batchSize = parser.optionAsNumber("b", DEFAULT_BATCH_SIZE).intValue();
         config.delim = delim(parser.option("d", String.valueOf(DEFAULT_DELIM)));
         config.quotes = parser.options().containsKey("q");
