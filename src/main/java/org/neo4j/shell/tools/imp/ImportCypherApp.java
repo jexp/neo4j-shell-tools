@@ -2,7 +2,6 @@ package org.neo4j.shell.tools.imp;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-import org.apache.commons.lang.StringUtils;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
 import org.neo4j.helpers.collection.IteratorUtil;
@@ -203,8 +202,15 @@ public class ImportCypherApp extends AbstractApp {
             value = String.format("%.2f", value);
         }
         else if (value instanceof String[]) {
-          // TODO: might want to iterate over the contents to ensure values don't contain the provided delim
-          value = org.apache.commons.lang.StringUtils.join((String[]) value, arrayDelim);
+          String results = "";
+          for (String s: (String[])value) {
+            // TODO: What to do if value s contains the provided arrayDelim?
+            results = results + s + arrayDelim;
+          }
+          // remove the trailing delimeter
+          if ( results.length() > 0 ) {
+            value = results.substring(0, results.length()-1);
+          }
         }
         return value == null ? null : value.toString();
     }
