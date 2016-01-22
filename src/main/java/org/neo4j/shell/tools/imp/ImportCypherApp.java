@@ -202,15 +202,15 @@ public class ImportCypherApp extends AbstractApp {
             value = String.format("%.2f", value);
         }
         else if (value instanceof String[]) {
-          String results = "";
-          for (String s: (String[])value) {
-            // TODO: What to do if value s contains the provided arrayDelim?
-            results = results + s + arrayDelim;
+          StringBuilder results = new StringBuilder();
+          if ( ((String[])value).length > 0 ) {
+            results.append( ((String[])value)[0] );
+            for ( int x=1; x < ((String[])value).length; ++x ) {
+              // TODO: What to do if value s contains the provided arrayDelim?
+              results.append(arrayDelim).append(((String[])value)[x]);
+            }
           }
-          // remove the trailing delimeter
-          if ( results.length() > 0 ) {
-            value = results.substring(0, results.length()-1);
-          }
+          value = results.toString();
         }
         return value == null ? null : value.toString();
     }
