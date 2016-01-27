@@ -26,6 +26,8 @@ public class ImportCypherApp extends AbstractApp {
 
 
     {
+        addOptionDefinition( "a", new OptionDefinition( OptionValueType.MUST,
+                "Delimeter for Array values, default is semicolon ';' " ) );
         addOptionDefinition( "i", new OptionDefinition( OptionValueType.MUST,
                 "Input CSV/TSV file" ) );
         addOptionDefinition( "o", new OptionDefinition( OptionValueType.MUST,
@@ -73,7 +75,7 @@ public class ImportCypherApp extends AbstractApp {
 
         int count;
         if (reader==null) {
-            count = execute(query, writer);
+            count = execute(query, writer, config);
         } else {
             count = executeOnInput(reader, query, writer, config, new ProgressReporter(inputFile,out));
         }
@@ -106,9 +108,9 @@ public class ImportCypherApp extends AbstractApp {
         return config.isQuotes() ? new CSVReader(reader,config.getDelimChar(), Config.QUOTECHAR) : new CSVReader(reader,config.getDelimChar());
     }
 
-    private int execute(String query, CSVWriter writer) {
+    private int execute(String query, CSVWriter writer, Config config) {
         Result result = getEngine().execute(query);
-        return writeResult(result, writer,true);
+        return writeResult(result, writer, true, config.getArrayDelim());
     }
 
 
@@ -124,7 +126,7 @@ public class ImportCypherApp extends AbstractApp {
                 Map<String, Object> queryParams = update(params, types, input);
                 String newQuery = applyReplacements(query, replacements, queryParams);
                 Result result = getEngine().execute(newQuery, queryParams);
-                outCount += writeResult(result, writer, first);
+                outCount += writeResult(result, writer, first, config.getArrayDelim());
                 first = false;
                 ProgressReporter.update(result.getQueryStatistics(), reporter);
                 tx.increment();
@@ -168,7 +170,7 @@ public class ImportCypherApp extends AbstractApp {
         return result;
     }
 
-    private int writeResult(Result result, CSVWriter writer, boolean first) {
+    private int writeResult(Result result, CSVWriter writer, boolean first, String arrayDelim) {
         if (writer==null) return IteratorUtil.count(result);
         String[] cols = new String[result.columns().size()];
         result.columns().toArray(cols);
@@ -180,24 +182,35 @@ public class ImportCypherApp extends AbstractApp {
         int count=0;
         while (result.hasNext()) {
             Map<String, Object> row= result.next();
-            writeRow(writer, cols, data, row);
+            writeRow(writer, cols, data, row, arrayDelim);
             count++;
         }
         return count;
     }
 
-    private void writeRow(CSVWriter writer, String[] cols, String[] data, Map<String, Object> row) {
+    private void writeRow(CSVWriter writer, String[] cols, String[] data, Map<String, Object> row, String arrayDelim) {
         for (int i = 0; i < cols.length; i++) {
             String col = cols[i];
-            data[i]= toString(row, col);
+            data[i]= toString(row, col, arrayDelim);
         }
         writer.writeNext(data);
     }
 
-    private String toString(Map<String, Object> row, String col) {
+    private String toString(Map<String, Object> row, String col, String arrayDelim) {
         Object value = row.get(col);
         if (value instanceof Double) {
             value = String.format("%.2f", value);
+        }
+        else if (value instanceof String[]) {
+          StringBuilder results = new StringBuilder();
+          if ( ((String[])value).length > 0 ) {
+            results.append( ((String[])value)[0] );
+            for ( int x=1; x < ((String[])value).length; ++x ) {
+              // TODO: What to do if value s contains the provided arrayDelim?
+              results.append(arrayDelim).append(((String[])value)[x]);
+            }
+          }
+          value = results.toString();
         }
         return value == null ? null : value.toString();
     }

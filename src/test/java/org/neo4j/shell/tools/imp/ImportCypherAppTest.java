@@ -15,7 +15,9 @@ import org.neo4j.test.TestGraphDatabaseFactory;
 import java.io.*;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.text.DecimalFormatSymbols;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Scanner;
 
 import static org.junit.Assert.*;
@@ -183,11 +185,33 @@ public class ImportCypherAppTest {
     }
 
     @Test
+    public void testToStringWithArrayString() throws Exception {
+      assertCommand(client, "import-cypher -a | -o out.csv create (n {name:['foo','bar']}) return n.name as name",
+              "Query: create (n {name:['foo','bar']}) return n.name as name infile (none) delim ',' quoted false outfile out.csv batch-size 1000",
+              "Import statement execution created 1 rows of output.");
+      assertFile("name", "foo|bar");
+
+      assertCommand(client, "import-cypher -o out.csv create (n {name:['b,ar','foo']}) return n.name as name",
+              "Query: create (n {name:['b,ar','foo']}) return n.name as name infile (none) delim ',' quoted false outfile out.csv batch-size 1000",
+              "Import statement execution created 1 rows of output.");
+      assertFile("name", "b,ar;foo");
+
+      assertCommand(client, "import-cypher -o out.csv create (n {name:['fo\"o','bar']}) return n.name as name",
+              "Query: create (n {name:['fo\"o','bar']}) return n.name as name infile (none) delim ',' quoted false outfile out.csv batch-size 1000",
+              "Import statement execution created 1 rows of output.");
+      assertFile("name", "fo\"\"o;bar");
+    }
+
+    @Test
     public void testToStringWithDouble() throws Exception {
         assertCommand(client, "import-cypher -o out.csv return 10000000.0 as dec",
                 "Query: return 10000000.0 as dec infile (none) delim ',' quoted false outfile out.csv batch-size 1000",
                 "Import statement execution created 1 rows of output.");
-        assertFile("dec", "10000000,00");
+
+        // don't hard code the seperator
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault(Locale.Category.FORMAT));
+
+        assertFile("dec", "10000000" + symbols.getDecimalSeparator() + "00");
     }
 
     private void assertFile(String...expected) throws FileNotFoundException {
