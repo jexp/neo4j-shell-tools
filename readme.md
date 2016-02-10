@@ -4,8 +4,18 @@
 
 ### Installation
 
-Run the bash script below to download [neo4j-shell-tools_2.2.zip](http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_2.2.zip) and extract it in your
+Download [neo4j-shell-tools_2.2.zip](http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_2.2.zip) and extract it in your
 Neo4j Server's lib directory e.g.
+
+````
+cd /path/to/neo4j-community-2.2.5
+curl http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_2.2.zip -o neo4j-shell-tools.zip
+unzip neo4j-shell-tools.zip -d lib
+````
+
+#### Easier installation on Unix
+
+The following script does the above installation automatically, and sets the `$NEO4J_HOME` path; works on Unix:
 
 ````
 NEO4J_HOME=$(neo4j-shell -c 'dbinfo -g Kernel StoreDirectory' | grep -oE '\/.*lib.*?\/') && curl -LOk http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_2.2.zip && unzip neo4j-shell-tools_2.2.zip -d ${NEO4J_HOME}lib
@@ -16,7 +26,7 @@ NEO4J_HOME=$(neo4j-shell -c 'dbinfo -g Kernel StoreDirectory' | grep -oE '\/.*li
 Restart neo4j and then launch the neo4j-shell:
 
 ````
-cd $NEO4J_HOME
+cd /path/to/neo4j-community-2.2.5
 ./bin/neo4j restart
 ./bin/neo4j-shell
 ````
