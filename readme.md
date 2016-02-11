@@ -13,6 +13,14 @@ curl http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_2.2.zip -o neo4j-shell-t
 unzip neo4j-shell-tools.zip -d lib
 ````
 
+#### Easier installation on Unix
+
+The following script does the above installation automatically, and sets the `$NEO4J_HOME` path; works on Unix:
+
+````
+NEO4J_HOME=$(neo4j-shell -c 'dbinfo -g Kernel StoreDirectory' | grep -oE '\/.*lib.*?\/') && curl -LOk http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_2.2.zip && unzip neo4j-shell-tools_2.2.zip -d ${NEO4J_HOME}lib
+````
+
 ### Before you start
 
 Restart neo4j and then launch the neo4j-shell:
