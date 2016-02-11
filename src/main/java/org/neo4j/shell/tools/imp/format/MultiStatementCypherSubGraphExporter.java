@@ -216,7 +216,8 @@ public class MultiStatementCypherSubGraphExporter {
             String label = l.name();
             String prop = uniqueConstraints.get(label);
             if (prop == null) continue;
-            Object value = node.getProperty(prop);
+            Object value = node.getProperty(prop, null);
+            if (value == null) continue;
             return nodeLookup(id, label, prop, value);
         }
         return nodeLookup(id, UNIQUE_ID_LABEL, UNIQUE_ID_PROP, node.getId());
