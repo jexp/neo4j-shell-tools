@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 */
 public class ProgressReporter implements Reporter {
     private final SizeCounter sizeCounter;
-    private Output out;
+    private final Output out;
     long time;
     int counter;
     long start=System.currentTimeMillis();

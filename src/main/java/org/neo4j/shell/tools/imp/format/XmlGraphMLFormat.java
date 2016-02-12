@@ -16,7 +16,7 @@ import java.io.Writer;
  * @since 21.01.14
  */
 public class XmlGraphMLFormat implements Format {
-    private GraphDatabaseService db;
+    private final GraphDatabaseService db;
 
     public XmlGraphMLFormat(GraphDatabaseService db) {
         this.db = db;

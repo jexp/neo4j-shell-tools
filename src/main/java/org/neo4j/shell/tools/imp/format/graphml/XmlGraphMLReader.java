@@ -22,7 +22,7 @@ import java.util.Map;
 public class XmlGraphMLReader {
 
     public static final String LABEL_SPLIT = " *: *";
-    private GraphDatabaseService gdb;
+    private final GraphDatabaseService gdb;
     private boolean storeNodeIds;
     private DynamicRelationshipType defaultRelType =DynamicRelationshipType.withName("UNKNOWN");
     private int batchSize = 40000;
