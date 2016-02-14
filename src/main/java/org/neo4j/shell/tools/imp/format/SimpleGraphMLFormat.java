@@ -17,7 +17,7 @@ import static org.neo4j.helpers.collection.Iterables.join;
  * @since 21.01.14
  */
 public class SimpleGraphMLFormat implements Format {
-    private GraphDatabaseService db;
+    private final GraphDatabaseService db;
 
     public SimpleGraphMLFormat(GraphDatabaseService db) {
         this.db = db;

@@ -17,7 +17,7 @@ import static org.neo4j.helpers.collection.Iterables.join;
  * @since 21.01.14
  */
 public class SimpleGraphMLWriter {
-    private GraphDatabaseService db;
+    private final GraphDatabaseService db;
 
     public SimpleGraphMLWriter(GraphDatabaseService db) {
         this.db = db;
