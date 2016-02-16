@@ -16,6 +16,7 @@ import static org.neo4j.helpers.collection.Iterables.join;
  * @since 19.01.14
  */
 public class MetaInformation {
+    public final static Set<String> GRAPHML_ALLOWED = new HashSet<>(asList("boolean", "int", "long", "float", "double", "string"));
 
     public static Map<String,Class> collectPropTypesForNodes(SubGraph graph) {
         Map<String,Class> propTypes = new LinkedHashMap<>();
@@ -44,8 +45,6 @@ public class MetaInformation {
             keyTypes.put(prop, void.class);
         }
     }
-
-    public final static Set<String> GRAPHML_ALLOWED = new HashSet<>(asList("boolean", "int", "long", "float", "double", "string"));
 
     public static String typeFor(Class value, Set<String> allowed) {
         if (value == void.class) return null;
