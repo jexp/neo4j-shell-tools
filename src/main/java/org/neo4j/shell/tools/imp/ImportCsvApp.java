@@ -149,23 +149,6 @@ public class ImportCsvApp extends AbstractApp {
         return types;
     }
 
-    private String applyReplacements(String query, Map<String, String> replacements, Map<String, Object> queryParams) {
-        for (Map.Entry<String, String> entry : replacements.entrySet()) {
-            Object value = queryParams.get(entry.getKey());
-            query = query.replace(entry.getValue(), String.valueOf(value));
-        }
-        return query;
-    }
-
-    private Map<String, String> computeReplacements(Map<String, Object> params, String query) {
-        Map<String, String> result = new HashMap<>();
-        for (String name : params.keySet()) {
-            String pattern = "#{" + name + "}";
-            if (query.contains(pattern)) result.put(name,pattern);
-        }
-        return result;
-    }
-
     private int writeResult(CSVWriter writer, boolean first, GraphDatabaseService db) {
         if (writer==null) return -1;
         GlobalGraphOperations globalOpts = GlobalGraphOperations.at(db);
@@ -194,7 +177,7 @@ public class ImportCsvApp extends AbstractApp {
         Iterable<Label> labels = node.getLabels();
         StringBuilder sb=new StringBuilder();
         for (Label label : labels) {
-            sb.append(":");
+            sb.append(':');
             sb.append(label.name());
 
         }
@@ -209,14 +192,6 @@ public class ImportCsvApp extends AbstractApp {
         int idx=2;
         for (String col : allProperties) cols[idx++]=col;
         return cols;
-    }
-
-    private void writeRow(CSVWriter writer, String[] cols, String[] data, Map<String, Object> row) {
-        for (int i = 0; i < cols.length; i++) {
-            String col = cols[i];
-            data[i]= toString(row, col);
-        }
-        writer.writeNext(data);
     }
 
     private String toString(Map<String, Object> row, String col) {
