@@ -151,7 +151,7 @@ public class MultiStatementCypherSubGraphExporter {
         return "CREATE INDEX ON :" + quote(label) + "(" + quote(key) + ");";
     }
 
-    private String uniqueConstraint(String label, String key) {
+    private static String uniqueConstraint(String label, String key) {
         return "CREATE CONSTRAINT ON (node:" + quote(label) + ") ASSERT node." + quote(key) + " IS UNIQUE;";
     }
 

@@ -47,7 +47,7 @@ public class CsvFormat implements Format {
         }
     }
 
-    private Collection<String> generateHeader(Map<String,Class> nodePropTypes, String...starters) {
+    private static Collection<String> generateHeader(Map<String,Class> nodePropTypes, String...starters) {
         List<String> result = new ArrayList<String>();
         Collections.addAll(result, starters);
         for (Map.Entry<String, Class> entry : nodePropTypes.entrySet()) {

@@ -27,7 +27,7 @@ public class QueryParameterExtractor {
         return sb.toString();
     }
 
-    private Object convertValue(String value) {
+    private static Object convertValue(String value) {
         if (value.equals("NULL") || value.equals("null")) return null;
         if (value.charAt(0)=='"' || value.charAt(0)=='\'') {
             return value.substring(1, value.length() - 1);
@@ -46,7 +46,7 @@ public class QueryParameterExtractor {
         }
     }
 
-    private String param(int i) {
+    private static String param(int i) {
         return " p "+i;
     }
 }

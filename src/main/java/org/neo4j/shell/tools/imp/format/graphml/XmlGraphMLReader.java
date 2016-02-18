@@ -234,7 +234,7 @@ public class XmlGraphMLReader {
         }
     }
 
-    private XMLEvent peek(XMLEventReader reader) throws XMLStreamException {
+    private static XMLEvent peek(XMLEventReader reader) throws XMLStreamException {
         XMLEvent peek = reader.peek();
         if (peek.isCharacters() && (peek.asCharacters().isWhiteSpace())) {
             reader.nextEvent();
@@ -243,7 +243,7 @@ public class XmlGraphMLReader {
         return peek;
     }
 
-    private void setDefaults(Map<String, Key> keys, PropertyContainer pc) {
+    private static void setDefaults(Map<String, Key> keys, PropertyContainer pc) {
         if (keys.isEmpty()) return;
         for (Key key : keys.values()) {
             if (key.defaultValue!=null) pc.setProperty(key.name,key.defaultValue);

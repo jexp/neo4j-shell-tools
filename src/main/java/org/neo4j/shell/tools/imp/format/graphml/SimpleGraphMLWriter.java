@@ -49,7 +49,7 @@ public class SimpleGraphMLWriter {
         writeKeyTypes(writer, keyTypes, "edge");
     }
 
-    private void writeKeyTypes(Writer writer, Map<String, Class> keyTypes, String forType) throws IOException {
+    private static void writeKeyTypes(Writer writer, Map<String, Class> keyTypes, String forType) throws IOException {
         for (Map.Entry<String, Class> entry : keyTypes.entrySet()) {
             String type = MetaInformation.typeFor(entry.getValue(), MetaInformation.GRAPHML_ALLOWED);
             if (type == null) continue;
@@ -116,16 +116,16 @@ public class SimpleGraphMLWriter {
         return count;
     }
 
-    private void writeData(Writer writer, String prop, Object value) throws IOException {
+    private static void writeData(Writer writer, String prop, Object value) throws IOException {
         writer.write("<data key=\""+prop+"\">"+value+"</data>");
     }
 
-    private void writeFooter(Writer writer) throws IOException {
+    private static void writeFooter(Writer writer) throws IOException {
         writer.write("</graph>\n" +
                 "</graphml>");
     }
 
-    private void writeHeader(Writer writer) throws IOException {
+    private static void writeHeader(Writer writer) throws IOException {
         writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\"\n" +
                 " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +

@@ -83,12 +83,12 @@ public class ImportCypherApp extends AbstractApp {
         return Continuation.INPUT_COMPLETE;
     }
 
-    private String name(Object file) {
+    private static String name(Object file) {
         if (file==null) return "(none)";
         return file.toString();
     }
 
-    private char delim(String value) {
+    private static char delim(String value) {
         if (value.length()==1) return value.charAt(0);
         if (value.contains("\\t")) return '\t';
         if (value.contains(" ")) return ' ';
@@ -133,7 +133,7 @@ public class ImportCypherApp extends AbstractApp {
         return outCount;
     }
 
-    private Map<String, Type> extractTypes(Map<String, Object> params) {
+    private static Map<String, Type> extractTypes(Map<String, Object> params) {
         Map<String,Object> newParams = new LinkedHashMap<>();
         Map<String,Type> types = new LinkedHashMap<>();
         for (String header : params.keySet()) {
@@ -151,7 +151,7 @@ public class ImportCypherApp extends AbstractApp {
         return types;
     }
 
-    private String applyReplacements(String query, Map<String, String> replacements, Map<String, Object> queryParams) {
+    private static String applyReplacements(String query, Map<String, String> replacements, Map<String, Object> queryParams) {
         for (Map.Entry<String, String> entry : replacements.entrySet()) {
             Object value = queryParams.get(entry.getKey());
             query = query.replace(entry.getValue(), String.valueOf(value));
@@ -159,7 +159,7 @@ public class ImportCypherApp extends AbstractApp {
         return query;
     }
 
-    private Map<String, String> computeReplacements(Map<String, Object> params, String query) {
+    private static Map<String, String> computeReplacements(Map<String, Object> params, String query) {
         Map<String, String> result = new HashMap<>();
         for (String name : params.keySet()) {
             String pattern = "#{" + name + "}";
@@ -194,7 +194,7 @@ public class ImportCypherApp extends AbstractApp {
         writer.writeNext(data);
     }
 
-    private String toString(Map<String, Object> row, String col) {
+    private static String toString(Map<String, Object> row, String col) {
         Object value = row.get(col);
         if (value instanceof Double) {
             value = String.format("%.2f", value);
@@ -211,7 +211,7 @@ public class ImportCypherApp extends AbstractApp {
         return params;
     }
 
-    private Map<String, Object> update(Map<String, Object> params, Map<String, Type> types, String[] input) {
+    private static Map<String, Object> update(Map<String, Object> params, Map<String, Type> types, String[] input) {
         int col=0;
         for (Map.Entry<String, Object> param : params.entrySet()) {
             Type type = types.get(param.getKey());
