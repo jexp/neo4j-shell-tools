@@ -35,11 +35,11 @@ public class ExportXmlGraphMLWriterTest {
             "<graph id=\"G\" edgedefault=\"directed\">\n";
     static final String TEST_XML_KEYS =
             "<key id=\"na&lt;&gt;me\" for=\"node\" attr.name=\"na&lt;&gt;me\" attr.type=\"string\"/>\n" +
-            "<key id=\"count\" for=\"edge\" attr.name=\"count\" attr.type=\"int\"/>\n";
+            "<key id=\"count\" for=\"edge\" attr.name=\"count\" attr.type=\"double\"/>\n";
     public static final String TEST_XML_DATA_NODE =
             "<node id=\"n0\" labels=\":FOO\"><data key=\"labels\">:FOO</data><data key=\"na&lt;&gt;me\">John &amp; Dö</data></node>\n";
     public static final String TEST_XML_DATA_EDGE =
-            "<edge id=\"e0\" source=\"n0\" target=\"n0\" label=\"BAR\"><data key=\"label\">BAR</data><data key=\"count\">0</data></edge>\n";
+            "<edge id=\"e0\" source=\"n0\" target=\"n0\" label=\"BAR\"><data key=\"label\">BAR</data><data key=\"count\">0.01</data></edge>\n";
     static final String TEST_XML_DATA = TEST_XML_DATA_NODE + TEST_XML_DATA_EDGE;
     static final String TEST_XML_FOOTER =
             "</graph>\n" +
@@ -102,7 +102,7 @@ public class ExportXmlGraphMLWriterTest {
                 Node from = db.getNodeById(random.nextInt(nodes));
                 Node to = db.getNodeById(random.nextInt(nodes));
                 Relationship rel = from.createRelationshipTo(to, TYPE);
-                rel.setProperty("count",i);
+                rel.setProperty("count",((double)i+1)/100);
             }
             tx.success();
         }

@@ -24,12 +24,12 @@ import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.schema.IndexDefinition;
 import org.neo4j.helpers.collection.Iterables;
 import org.neo4j.helpers.collection.IteratorUtil;
+import org.neo4j.shell.tools.imp.util.FormatUtils;
 import org.neo4j.shell.tools.imp.util.ProgressReporter;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
 import java.util.*;
-import java.text.*;
 
 /**
  * Idea is to lookup nodes for relationships via a unqiue index
@@ -301,18 +301,11 @@ public class MultiStatementCypherSubGraphExporter {
         return "[" + result.toString() + "]";
     }
 
-    private final NumberFormat decimalFormat = new DecimalFormat() {{
-	   setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
-    }};
-
     private String toString(Object value) {
         if (value == null) return "null";
-        if (value instanceof String) return "\"" + String.valueOf(value).replaceAll("\"","\\\"") + "\"";
+        if (value instanceof String) return FormatUtils.formatString(value);
         if (value instanceof Number) {
-           if (value instanceof Double || value instanceof Float) {
-              return decimalFormat.format(value);
-           }
-           return value.toString();
+            return FormatUtils.formatNumber((Number) value);
         }
         if (value instanceof Boolean) return value.toString();
         if (value instanceof Iterator) {
@@ -326,4 +319,5 @@ public class MultiStatementCypherSubGraphExporter {
         }
         return value.toString();
     }
+
 }

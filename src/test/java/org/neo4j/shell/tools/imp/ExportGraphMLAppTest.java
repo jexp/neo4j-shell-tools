@@ -89,7 +89,7 @@ public class ExportGraphMLAppTest {
                 Node from = db.getNodeById(random.nextInt(nodes));
                 Node to = db.getNodeById(random.nextInt(nodes));
                 Relationship rel = from.createRelationshipTo(to, TYPE);
-                rel.setProperty("count",i);
+                rel.setProperty("count",((double)i+1)/100);
             }
             tx.success();
         }

@@ -3,6 +3,7 @@ package org.neo4j.shell.tools.imp.format.graphml;
 import org.neo4j.cypher.export.SubGraph;
 import org.neo4j.graphdb.*;
 import org.neo4j.shell.tools.imp.util.Config;
+import org.neo4j.shell.tools.imp.util.FormatUtils;
 import org.neo4j.shell.tools.imp.util.MetaInformation;
 import org.neo4j.shell.tools.imp.util.Reporter;
 
@@ -136,8 +137,15 @@ public class XmlGraphMLWriter {
     private void writeData(XMLStreamWriter writer, String prop, Object value) throws IOException, XMLStreamException {
         writer.writeStartElement("data");
         writer.writeAttribute("key", prop);
-        if (value != null) writer.writeCharacters(value.toString());
+        if (value != null) writer.writeCharacters(toString(value));
         writer.writeEndElement();
+    }
+
+    private String toString(Object value) {
+        if (value instanceof Number) {
+            return FormatUtils.formatNumber((Number)value);
+        }
+        return value.toString();
     }
 
     private void writeFooter(XMLStreamWriter writer) throws IOException, XMLStreamException {

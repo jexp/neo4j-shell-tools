@@ -23,12 +23,13 @@ import static org.neo4j.helpers.collection.MapUtil.map;
 public class MultiStatementCypherSubGraphExporterTest {
 
     public static final Label USER = label("User");
+    public static final String CONSTRAINT_END_SECTION = "CREATE CONSTRAINT ON (node:`UNIQUE IMPORT LABEL`) ASSERT node.`UNIQUE IMPORT ID` IS UNIQUE;\n" +
+            "commit\n" +
+            "schema await\n";
     public static final String CONSTRAINT_SECTION = "begin\n" +
             "CREATE INDEX ON :`User`(`age`);\n" +
             "CREATE CONSTRAINT ON (node:`User`) ASSERT node.`name` IS UNIQUE;\n" +
-            "CREATE CONSTRAINT ON (node:`UNIQUE IMPORT LABEL`) ASSERT node.`UNIQUE IMPORT ID` IS UNIQUE;\n" +
-            "commit\n" +
-            "schema await\n";
+            CONSTRAINT_END_SECTION;
     public static final String CLEANUP_SECTION = "begin\n" +
             "MATCH (n:`UNIQUE IMPORT LABEL`)  WITH n LIMIT 1000 REMOVE n:`UNIQUE IMPORT LABEL` REMOVE n.`UNIQUE IMPORT ID`;\n" +
             "commit\n" +
@@ -75,6 +76,24 @@ public class MultiStatementCypherSubGraphExporterTest {
         tx.close();
     }
 
+    @Test
+    public void testFormatStringsAndNumbers() throws Exception {
+        try (Transaction tx = db.beginTx()) {
+            Node n = db.createNode(USER);
+            n.setProperty("foo","a\n\b\t\"c");
+            n.setProperty("long",10000000000L);
+            n.setProperty("double",10000000000.0001D);
+            tx.success();
+        }
+        String output = doOutput(db, 1000);
+        Assert.assertEquals(
+                        "begin\n" +
+                        "CREATE (:`User`:`UNIQUE IMPORT LABEL` {`double`:10000000000.0001, `foo`:\"a\\n\b\\t\\\"c\", `long`:10000000000});\n" +
+                        "commit\n"+
+                        "begin\n"+
+                        CONSTRAINT_END_SECTION +
+                        CLEANUP_SECTION,output);
+    }
     @Test
     public void testExportSingleNodeGraph() throws Exception {
         createData(1, db);

@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -196,8 +198,8 @@ public class ImportCypherApp extends AbstractApp {
 
     private String toString(Map<String, Object> row, String col) {
         Object value = row.get(col);
-        if (value instanceof Double) {
-            value = String.format("%.2f", value);
+        if (value instanceof Number) {
+            return FormatUtils.formatNumber((Number) value);
         }
         return value == null ? null : value.toString();
     }
