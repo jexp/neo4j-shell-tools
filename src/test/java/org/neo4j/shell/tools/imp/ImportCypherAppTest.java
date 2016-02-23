@@ -15,6 +15,7 @@ import org.neo4j.test.TestGraphDatabaseFactory;
 import java.io.*;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.text.DecimalFormatSymbols;
 import java.util.Collections;
 import java.util.Scanner;
 
@@ -187,7 +188,8 @@ public class ImportCypherAppTest {
         assertCommand(client, "import-cypher -o out.csv return 10000000.0 as dec",
                 "Query: return 10000000.0 as dec infile (none) delim ',' quoted false outfile out.csv batch-size 1000",
                 "Import statement execution created 1 rows of output.");
-        assertFile("dec", "10000000,00");
+        char sep = DecimalFormatSymbols.getInstance().getDecimalSeparator();
+        assertFile("dec", "10000000" + sep + "00");
     }
 
     private void assertFile(String...expected) throws FileNotFoundException {
