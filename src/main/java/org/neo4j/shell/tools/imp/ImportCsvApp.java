@@ -13,10 +13,7 @@ import org.neo4j.shell.kernel.GraphDatabaseShellServer;
 import org.neo4j.shell.tools.imp.util.*;
 import org.neo4j.tooling.GlobalGraphOperations;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,6 +38,9 @@ public class ImportCsvApp extends AbstractApp {
                 "Label to export" ) );
         addOptionDefinition( "q", new OptionDefinition( OptionValueType.NONE,
                 "Quoted Strings in file" ) );
+        addOptionDefinition( "s", new OptionDefinition( OptionValueType.NONE,
+                "Silent Operations" ) );
+
     }
 
     @Override
@@ -60,12 +60,16 @@ public class ImportCsvApp extends AbstractApp {
         char delim = delim(parser.option("d", ","));
         int batchSize = Integer.parseInt(parser.option("b", String.valueOf(Config.DEFAULT_BATCH_SIZE)));
         boolean quotes = parser.options().containsKey("q");
+        boolean silent = parser.options().containsKey("s");
         String inputFileName = parser.option("i", null);
         CountingReader inputFile = FileUtils.readerFor(inputFileName);
-        File outputFile = fileFor(parser, "o");
+        String fileName = parser.option("o", null);
+        Writer outputFile = FileUtils.getPrintWriter(fileName, out);
 
-        out.println(String.format("Infile %s delim '%s' quoted %s outfile %s batch-size %d",
-                                   name(inputFileName),delim,quotes,name(outputFile),batchSize));
+        if (!silent) {
+            out.println(String.format("Infile %s delim '%s' quoted %s outfile %s batch-size %d",
+                    name(inputFileName),delim,quotes,name(fileName),batchSize));
+        }
 
         CSVReader reader = createReader(inputFile, config);
 
@@ -77,7 +81,9 @@ public class ImportCsvApp extends AbstractApp {
         } else {
             count = executeOnInput(reader, writer, config, new ProgressReporter(inputFile,out));
         }
-        out.println("Import statement execution created "+count+" rows of output.");
+        if (!silent) {
+            out.println("Import statement execution created " + count + " rows of output.");
+        }
         if (reader!=null) reader.close();
         if (writer!=null) writer.close();
         return Continuation.INPUT_COMPLETE;
@@ -95,9 +101,8 @@ public class ImportCsvApp extends AbstractApp {
         throw new RuntimeException("Illegal delimiter '"+value+"'");
     }
 
-    private CSVWriter createWriter(File outputFile, Config config) throws IOException {
-        if (outputFile==null) return null;
-        FileWriter file = new FileWriter(outputFile);
+    private CSVWriter createWriter(Writer file, Config config) throws IOException {
+        if (file==null) return null;
         return config.isQuotes() ? new CSVWriter(file,config.getDelimChar(), Config.QUOTECHAR) : new CSVWriter(file,config.getDelimChar());
     }
 
@@ -243,11 +248,4 @@ public class ImportCsvApp extends AbstractApp {
         return params;
     }
 
-    private File fileFor(AppCommandParser parser, String option) {
-        String fileName = parser.option(option, null);
-        if (fileName==null) return null;
-        File file = new File(fileName);
-        if (option.equals("o") || file.exists() && file.canRead() && file.isFile()) return file;
-        return null;
-    }
 }

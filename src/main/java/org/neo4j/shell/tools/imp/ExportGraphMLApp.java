@@ -13,10 +13,12 @@ import org.neo4j.shell.kernel.GraphDatabaseShellServer;
 import org.neo4j.shell.tools.imp.format.Format;
 import org.neo4j.shell.tools.imp.format.XmlGraphMLFormat;
 import org.neo4j.shell.tools.imp.util.Config;
+import org.neo4j.shell.tools.imp.util.FileUtils;
 import org.neo4j.shell.tools.imp.util.ProgressReporter;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.Writer;
 
 /**
  * TODO: arrays, labels, rel-types, key-types
@@ -62,7 +64,7 @@ public class ExportGraphMLApp extends AbstractApp {
 
         String fileName = parser.option("o", null);
         boolean relsBetween = parser.options().containsKey("r");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+        Writer writer = FileUtils.getPrintWriter(fileName,out);
 
         ProgressReporter reporter = new ProgressReporter(null, out);
 

@@ -15,6 +15,8 @@ import org.neo4j.shell.tools.imp.util.ProgressReporter;
 
 import java.io.*;
 
+import static org.neo4j.shell.tools.imp.util.FileUtils.getPrintWriter;
+
 public class ExportCypherApp extends AbstractApp {
 
     {
@@ -70,10 +72,5 @@ public class ExportCypherApp extends AbstractApp {
         }
         reporter.progress("Wrote to Cypher-file " + fileName);
         return Continuation.INPUT_COMPLETE;
-    }
-
-    private PrintWriter getPrintWriter(String fileName, Output out) throws IOException {
-        Writer writer = (fileName == null) ? new OutputAsWriter(out) : new BufferedWriter(new FileWriter(fileName));
-        return new PrintWriter(writer);
     }
 }
