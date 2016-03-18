@@ -243,7 +243,7 @@ public class MultiStatementCypherSubGraphExporter {
         if (!labels.isEmpty()) {
             out.print(labels);
         }
-        Long id = labels.contains(label(UNIQUE_ID_LABEL)) ? node.getId() : null;
+        Long id = labels.endsWith(label(UNIQUE_ID_LABEL)) ? node.getId() : null;
         int props = formatProperties(out, node, id);
         out.println(");");
         reporter.update(1, props, 0);
