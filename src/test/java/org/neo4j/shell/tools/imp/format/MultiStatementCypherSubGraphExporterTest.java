@@ -1,5 +1,6 @@
 package org.neo4j.shell.tools.imp.format;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +42,11 @@ public class MultiStatementCypherSubGraphExporterTest {
     @Before
     public void setUp() throws Exception {
         db = new TestGraphDatabaseFactory().newImpermanentDatabase();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        db.shutdown();
     }
 
     public static void createData(int count, GraphDatabaseService db) {
@@ -88,7 +94,7 @@ public class MultiStatementCypherSubGraphExporterTest {
         String output = doOutput(db, 1000);
         Assert.assertEquals(
                         "begin\n" +
-                        "CREATE (:`User`:`UNIQUE IMPORT LABEL` {`double`:10000000000.0001, `foo`:\"a\\n\b\\t\\\"c\", `long`:10000000000});\n" +
+                        "CREATE (:`User`:`UNIQUE IMPORT LABEL` {`double`:10000000000.0001, `foo`:\"a\\n\b\\t\\\"c\", `long`:10000000000, `UNIQUE IMPORT ID`:0});\n" +
                         "commit\n"+
                         "begin\n"+
                         CONSTRAINT_END_SECTION +
