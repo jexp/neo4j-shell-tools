@@ -48,6 +48,10 @@ public class MultiStatementCypherSubGraphExporter {
     private final static String UNIQUE_ID_PROP = "UNIQUE IMPORT ID";
     private long artificialUniques = 0;
 
+    private final NumberFormat decimalFormat = new DecimalFormat() {{
+        setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
+    }};
+
     public MultiStatementCypherSubGraphExporter(SubGraph graph) {
         this.graph = graph;
         uniqueConstraints = gatherUniqueConstraints(indexNames, indexedProperties);

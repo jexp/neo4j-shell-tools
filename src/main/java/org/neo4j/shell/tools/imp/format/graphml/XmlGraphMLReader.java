@@ -29,6 +29,20 @@ public class XmlGraphMLReader {
     private Reporter reporter;
     private boolean labels;
 
+    public static final QName ID = QName.valueOf("id");
+    public static final QName LABELS = QName.valueOf("labels");
+    public static final QName SOURCE = QName.valueOf("source");
+    public static final QName TARGET = QName.valueOf("target");
+    public static final QName LABEL = QName.valueOf("label");
+    public static final QName FOR = QName.valueOf("for");
+    public static final QName NAME = QName.valueOf("attr.name");
+    public static final QName TYPE = QName.valueOf("attr.type");
+    public static final QName KEY = QName.valueOf("key");
+
+    public XmlGraphMLReader(GraphDatabaseService gdb) {
+        this.gdb = gdb;
+    }
+
     public XmlGraphMLReader storeNodeIds() {
         this.storeNodeIds = true;
         return this;
@@ -118,20 +132,6 @@ public class XmlGraphMLReader {
             if (input == null || input.trim().isEmpty()) return defaultValue;
             return type.parse(input);
         }
-    }
-
-    public static final QName ID = QName.valueOf("id");
-    public static final QName LABELS = QName.valueOf("labels");
-    public static final QName SOURCE = QName.valueOf("source");
-    public static final QName TARGET = QName.valueOf("target");
-    public static final QName LABEL = QName.valueOf("label");
-    public static final QName FOR = QName.valueOf("for");
-    public static final QName NAME = QName.valueOf("attr.name");
-    public static final QName TYPE = QName.valueOf("attr.type");
-    public static final QName KEY = QName.valueOf("key");
-
-    public XmlGraphMLReader(GraphDatabaseService gdb) {
-        this.gdb = gdb;
     }
 
     public long parseXML(Reader input, NodeCache cache) throws XMLStreamException {
