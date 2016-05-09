@@ -198,7 +198,7 @@ Choose a suitable export command, depending on your requirement for the exported
 * To export your data as Cypher statements, use, use the [Cypher Export](#cypher-export) command.
 * To export your data as CSV, use the [Cypher Import](#cypher-import) command with the `-o file` option which will output the results of your queries into a CSV file.
 * To export your data as [GraphML](http://graphml.graphdrawing.org/), use the [GraphML Export](#graphml-export) command.
-* To export your data as a binary file, use the [Export Binary](#export-binary) command.
+* To export your data as a binary file, use the [Export Binary](#binary-export) command.
 
 #### Cypher Export
 
