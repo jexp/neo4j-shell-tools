@@ -132,7 +132,7 @@ Geoff import of in.geoff created 3 entities.
 
 Populate your database from a binary dump of a neo4j database.  Internally, Kyro is used to serialize the graph.
 
-`import-binary` [-i in.bin] [-r REL_TYPE] [-b 20000] [-c]
+`import-binary [-i in.bin] [-r REL_TYPE] [-b 20000] [-c]`
 
 - -i in.bin: binary file from previous database export
 - -r REL_TYPE default relationship-type for relationships without a label attribute
@@ -143,7 +143,6 @@ Usage:
 
 ````
 $ import-binary -b 10000 -i /tmp/export.bin -c
-
 ````
 
 #### GraphML Import
@@ -259,13 +258,12 @@ Export your Neo4j graph database to a binary file.
 
 `export-binary -o out.bin`
 
-- -o out.graphml: graphml file to write to
+- -o out.bin
 
 Usage:
 
 ````
 $ export-binary -o out.bin
-
 ````
 
 #### GraphML Export
