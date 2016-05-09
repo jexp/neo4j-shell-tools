@@ -45,7 +45,6 @@ public class ImportGraphMLAppTest {
             for (String prop : node.getPropertyKeys()) {
                 System.out.println("prop = " + prop+" "+node.getProperty(prop));
             }
-//            assertEquals("d1", node.getProperty("value"));
             tx.success();
         }
     }

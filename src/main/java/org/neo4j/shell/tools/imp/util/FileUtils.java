@@ -6,7 +6,6 @@ import org.neo4j.shell.OutputAsWriter;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Objects;
 
 /**
  * Created by mh on 12.07.13.

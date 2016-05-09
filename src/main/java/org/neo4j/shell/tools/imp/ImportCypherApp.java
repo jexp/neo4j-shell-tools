@@ -10,9 +10,9 @@ import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
 import org.neo4j.shell.tools.imp.util.*;
 
-import java.io.*;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
