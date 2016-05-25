@@ -61,17 +61,20 @@ public class KryoWriter {
   }
 
   private void writeIndex(Output output, IndexDefinition indexDefinition) {
-    // WRITE INDEX START
-    kryo.writeObject(output, KryoSerializationTypes.INDEX);
-    // WRITE INDEX LABEL
-    kryo.writeObject(output, indexDefinition.getLabel().name());
-    // WRITE PROPERTY KEYS
-    List<String> propertyKeys = new LinkedList<>();
-    Iterator<String> propertyKeyIterator = indexDefinition.getPropertyKeys().iterator();
-    while (propertyKeyIterator.hasNext()) {
-      propertyKeys.add(propertyKeyIterator.next());
+    // Constraints indices are handled when we write out constraints
+    if (!indexDefinition.isConstraintIndex()) {
+      // WRITE INDEX START
+      kryo.writeObject(output, KryoSerializationTypes.INDEX);
+      // WRITE INDEX LABEL
+      kryo.writeObject(output, indexDefinition.getLabel().name());
+      // WRITE PROPERTY KEYS
+      List<String> propertyKeys = new LinkedList<>();
+      Iterator<String> propertyKeyIterator = indexDefinition.getPropertyKeys().iterator();
+      while (propertyKeyIterator.hasNext()) {
+        propertyKeys.add(propertyKeyIterator.next());
+      }
+      kryo.writeObject(output, propertyKeys);
     }
-    kryo.writeObject(output, propertyKeys);
   }
 
   private int writeNode(Output output, Node node) {
