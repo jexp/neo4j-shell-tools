@@ -8,7 +8,9 @@ import org.neo4j.shell.tools.imp.util.Reporter;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import static org.neo4j.helpers.collection.Iterables.join;
 

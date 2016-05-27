@@ -19,12 +19,12 @@
  */
 package org.neo4j.shell.kernel.apps;
 
-import java.lang.reflect.Method;
-
 import org.neo4j.shell.Output;
 import org.neo4j.shell.Session;
 import org.neo4j.shell.ShellException;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
+
+import java.lang.reflect.Method;
 
 import static org.neo4j.shell.kernel.apps.TransactionProvidingApp.getCurrent;
 

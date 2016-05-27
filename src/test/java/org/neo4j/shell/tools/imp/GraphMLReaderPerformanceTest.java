@@ -7,11 +7,13 @@ import org.junit.Test;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.factory.GraphDatabaseSettings;
-import org.neo4j.io.fs.*;
 import org.neo4j.io.fs.FileUtils;
 import org.neo4j.shell.impl.SystemOutput;
 import org.neo4j.shell.tools.imp.format.graphml.XmlGraphMLReader;
-import org.neo4j.shell.tools.imp.util.*;
+import org.neo4j.shell.tools.imp.util.CountingReader;
+import org.neo4j.shell.tools.imp.util.MapNodeCache;
+import org.neo4j.shell.tools.imp.util.NodeCache;
+import org.neo4j.shell.tools.imp.util.ProgressReporter;
 
 import java.io.File;
 
@@ -47,7 +49,7 @@ public class GraphMLReaderPerformanceTest {
 
     @Test
     public void testReadEnronData() throws Exception {
-        NodeCache cache = MapNodeCache.usingMapDb();
+        NodeCache cache = MapNodeCache.<String, Long>usingMapDb();
         this.graphMlReader.parseXML(reader, cache);
     }
 

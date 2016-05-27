@@ -14,10 +14,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.*;
 
-import static org.neo4j.helpers.collection.Iterables.join;
-import static org.neo4j.shell.tools.imp.util.MetaInformation.collectPropTypesForNodes;
-import static org.neo4j.shell.tools.imp.util.MetaInformation.collectPropTypesForRelationships;
-import static org.neo4j.shell.tools.imp.util.MetaInformation.getLabelsString;
+import static org.neo4j.shell.tools.imp.util.MetaInformation.*;
 
 /**
  * @author mh

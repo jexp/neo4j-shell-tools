@@ -19,12 +19,12 @@
  */
 package org.neo4j.shell.kernel.apps;
 
-import static org.neo4j.shell.kernel.apps.ScriptEngineViaReflection.decorateWithImports;
-
 import org.neo4j.shell.AppCommandParser;
 import org.neo4j.shell.Continuation;
 import org.neo4j.shell.Output;
 import org.neo4j.shell.Session;
+
+import static org.neo4j.shell.kernel.apps.ScriptEngineViaReflection.decorateWithImports;
 
 /**
  * Exposes the javax.script.ScriptEngine as a shell app. It's purely via reflection so

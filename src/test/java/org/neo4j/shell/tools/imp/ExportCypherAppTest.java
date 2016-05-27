@@ -2,29 +2,21 @@ package org.neo4j.shell.tools.imp;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.Transaction;
 import org.neo4j.kernel.GraphDatabaseAPI;
 import org.neo4j.shell.ShellException;
 import org.neo4j.shell.impl.SameJvmClient;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
-import org.neo4j.shell.tools.imp.format.MultiStatementCypherSubGraphExporterTest;
 import org.neo4j.test.TestGraphDatabaseFactory;
 
 import java.io.File;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.Collections;
-import java.util.Random;
 import java.util.Scanner;
 
 import static org.junit.Assert.assertEquals;
 import static org.neo4j.shell.tools.Asserts.assertCommand;
-import static org.neo4j.shell.tools.imp.ExportXmlGraphMLWriterTest.*;
-import static org.neo4j.shell.tools.imp.format.MultiStatementCypherSubGraphExporterTest.CLEANUP_SECTION;
-import static org.neo4j.shell.tools.imp.format.MultiStatementCypherSubGraphExporterTest.CONSTRAINT_SECTION;
-import static org.neo4j.shell.tools.imp.format.MultiStatementCypherSubGraphExporterTest.createData;
+import static org.neo4j.shell.tools.imp.format.MultiStatementCypherSubGraphExporterTest.*;
 
 /**
  * @author mh

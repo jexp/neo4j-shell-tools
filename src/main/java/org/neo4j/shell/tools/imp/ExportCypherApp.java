@@ -13,7 +13,7 @@ import org.neo4j.shell.tools.imp.format.MultiStatementCypherSubGraphExporter;
 import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.util.ProgressReporter;
 
-import java.io.*;
+import java.io.PrintWriter;
 
 import static org.neo4j.shell.tools.imp.util.FileUtils.getPrintWriter;
 

@@ -16,8 +16,6 @@ import org.neo4j.shell.tools.imp.util.Config;
 import org.neo4j.shell.tools.imp.util.FileUtils;
 import org.neo4j.shell.tools.imp.util.ProgressReporter;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.Writer;
 
 /**
