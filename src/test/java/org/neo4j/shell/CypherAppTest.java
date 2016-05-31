@@ -2,7 +2,6 @@ package org.neo4j.shell;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.neo4j.cypher.javacompat.ExecutionEngine;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.test.TestGraphDatabaseFactory;
 
@@ -51,13 +50,12 @@ public class CypherAppTest extends AbstractShellTest
     @Test
     public void testExecutionEngine() throws Exception {
         GraphDatabaseService db = new TestGraphDatabaseFactory().newImpermanentDatabase();
-        ExecutionEngine engine = new ExecutionEngine(db);
         long time = System.currentTimeMillis();
         Map<String, Object> params = map("i", null);
         Map.Entry<String, Object> entry = params.entrySet().iterator().next();
         for (int i=1;i<1_000_000;i++) {
             entry.setValue(i);
-            engine.execute("return {i}",params);
+            db.execute("return {i}",params).close();
             if (i % 50_000 == 0) {
                 System.out.println("commit " + i + " " + (System.currentTimeMillis() - time) + " ms since start");
             }

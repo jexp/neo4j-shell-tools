@@ -3,6 +3,7 @@ package org.neo4j.shell.tools.imp.format.graphml;
 import org.neo4j.cypher.export.SubGraph;
 import org.neo4j.graphdb.*;
 import org.neo4j.shell.tools.imp.util.Config;
+import org.neo4j.shell.tools.imp.util.FormatUtils;
 import org.neo4j.shell.tools.imp.util.MetaInformation;
 import org.neo4j.shell.tools.imp.util.Reporter;
 
@@ -94,7 +95,7 @@ public class SimpleGraphMLWriter {
     private void writeLabelsAsData(Writer writer, Node node) throws IOException {
         Iterator<Label> it = node.getLabels().iterator();
         if (it.hasNext()) {
-            writeData(writer,"labels",join(",", it));
+            writeData(writer,"labels", FormatUtils.joinLabels(node,","));
         }
     }
 

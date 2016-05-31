@@ -20,10 +20,12 @@
 package org.neo4j.shell.tools.imp.format;
 
 import org.neo4j.cypher.export.SubGraph;
-import org.neo4j.graphdb.*;
+import org.neo4j.graphdb.Label;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.PropertyContainer;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.schema.IndexDefinition;
 import org.neo4j.helpers.collection.Iterables;
-import org.neo4j.helpers.collection.IteratorUtil;
 import org.neo4j.shell.tools.imp.util.FormatUtils;
 import org.neo4j.shell.tools.imp.util.ProgressReporter;
 
@@ -83,7 +85,7 @@ public class MultiStatementCypherSubGraphExporter {
         Map<String, String> result = new HashMap<>();
         for (IndexDefinition indexDefinition : graph.getIndexes()) {
             String label = indexDefinition.getLabel().name();
-            String prop = IteratorUtil.first(indexDefinition.getPropertyKeys());
+            String prop = Iterables.first(indexDefinition.getPropertyKeys());
             indexes.add(label);
             indexedProperties.add(prop);
             if (indexDefinition.isConstraintIndex()) {
@@ -137,7 +139,7 @@ public class MultiStatementCypherSubGraphExporter {
         List<String> result = new ArrayList<>();
         for (IndexDefinition index : graph.getIndexes()) {
             String label = index.getLabel().name();
-            String prop = IteratorUtil.single(index.getPropertyKeys());
+            String prop = Iterables.single(index.getPropertyKeys());
             if (index.isConstraintIndex()) {
                 result.add(uniqueConstraint(label, prop));
             } else {
@@ -254,7 +256,7 @@ public class MultiStatementCypherSubGraphExporter {
         out.print(" ");
         final String propertyString = formatProperties(pc, id);
         out.print(propertyString);
-        return IteratorUtil.count(pc.getPropertyKeys());
+        return (int) Iterables.count(pc.getPropertyKeys());
     }
 
     private String formatPropertyName(String prop) {
@@ -263,7 +265,7 @@ public class MultiStatementCypherSubGraphExporter {
 
     private String formatProperties(PropertyContainer pc, Long id) {
         StringBuilder result = new StringBuilder(1000);
-        List<String> keys = Iterables.toList(pc.getPropertyKeys());
+        List<String> keys = Iterables.asList(pc.getPropertyKeys());
         Collections.sort(keys);
         for (String prop : keys) {
             if (!indexedProperties.contains(prop)) continue;

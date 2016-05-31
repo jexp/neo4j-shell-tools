@@ -2,9 +2,8 @@ package org.neo4j.shell.tools.imp.format;
 
 import org.neo4j.cypher.export.SubGraph;
 import org.neo4j.cypher.export.SubGraphExporter;
-import org.neo4j.cypher.javacompat.ExecutionEngine;
-import org.neo4j.cypher.javacompat.ExecutionResult;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.shell.tools.imp.util.*;
 
@@ -25,11 +24,9 @@ public class CypherFormat implements Format {
 
     private static final int BATCH_SIZE = 20000;
     private final GraphDatabaseService db;
-    private final ExecutionEngine executionEngine;
 
     public CypherFormat(GraphDatabaseService db) {
         this.db = db;
-        executionEngine = new ExecutionEngine(db);
     }
 
     @Override
@@ -45,7 +42,7 @@ public class CypherFormat implements Format {
                 }
                 params.clear();
                 String queryWithParams = extractor.extract(query, params);
-                ExecutionResult result = executionEngine.execute(queryWithParams, params);
+                Result result = db.execute(queryWithParams, params);
                 ProgressReporter.update(result.getQueryStatistics(), reporter);
                 tx.increment();
             }

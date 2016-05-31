@@ -4,15 +4,15 @@ import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
-import org.neo4j.helpers.collection.IteratorUtil;
+import org.neo4j.helpers.collection.Iterators;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
 import org.neo4j.shell.tools.imp.util.*;
 
-import java.io.*;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -176,7 +176,7 @@ public class ImportCypherApp extends AbstractApp {
     }
 
     private int writeResult(Result result, CSVWriter writer, boolean first) {
-        if (writer==null) return IteratorUtil.count(result);
+        if (writer==null) return (int) Iterators.count(result);
         String[] cols = new String[result.columns().size()];
         result.columns().toArray(cols);
         String[] data = new String[cols.length];

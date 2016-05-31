@@ -3,7 +3,7 @@ package org.neo4j.shell.tools.imp;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.kernel.GraphDatabaseAPI;
+import org.neo4j.kernel.internal.GraphDatabaseAPI;
 import org.neo4j.shell.ShellException;
 import org.neo4j.shell.impl.CollectingOutput;
 import org.neo4j.shell.impl.SameJvmClient;

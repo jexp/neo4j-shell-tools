@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <properties>
-        <neo4j.version>2.3.3</neo4j.version>
+        <neo4j.version>3.0.1</neo4j.version>
     </properties>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.neo4j.shell</groupId>
     <artifactId>import-tools</artifactId>
     <packaging>jar</packaging>
-    <version>2.3.3</version>
+    <version>3.0.1</version>
     <name>neo4j-shell-import-tools</name>
 
     <build>
@@ -17,8 +17,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                  <source>1.7</source>
-                  <target>1.7</target>
+                  <source>1.8</source>
+                  <target>1.8</target>
                   <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -64,39 +64,14 @@
             <version>2.3</version>
         </dependency>
         <dependency>
-            <groupId>com.nigelsmall</groupId>
-            <artifactId>geoff</artifactId>
-            <version>0.5.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.neo4j</groupId>
-                    <artifactId>neo4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j</artifactId>
             <version>${neo4j.version}</version>
-            <!--<scope>provided</scope>-->
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-kernel</artifactId>
-            <version>${neo4j.version}</version>
-            <!--<scope>provided</scope>-->
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-lucene-index</artifactId>
-            <version>${neo4j.version}</version>
-            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-shell</artifactId>
             <version>${neo4j.version}</version>
-            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>
@@ -109,7 +84,6 @@
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-graphviz</artifactId>
             <version>${neo4j.version}</version>
-            <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -140,6 +114,21 @@
             <version>${neo4j.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.nigelsmall</groupId>
+            <artifactId>geoff</artifactId>
+            <version>0.5.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.neo4j</groupId>
+                    <artifactId>neo4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.neo4j</groupId>
+                    <artifactId>neo4j-kernel</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>

@@ -6,14 +6,15 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.ResourceIterable;
-import org.neo4j.helpers.collection.IteratorUtil;
+import org.neo4j.helpers.collection.Iterables;
 import org.neo4j.shell.*;
 import org.neo4j.shell.impl.AbstractApp;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
 import org.neo4j.shell.tools.imp.util.*;
-import org.neo4j.tooling.GlobalGraphOperations;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -173,16 +174,15 @@ public class ImportCsvApp extends AbstractApp {
 
     private int writeResult(CSVWriter writer, boolean first, GraphDatabaseService db) {
         if (writer==null) return -1;
-        GlobalGraphOperations globalOpts = GlobalGraphOperations.at(db);
 
-        String[] cols = getAllProperties(globalOpts);
+        String[] cols = getAllProperties(db);
         if (first) {
             writer.writeNext(cols);
         }
 
         String[] data = new String[cols.length];
         int count=0;
-        for (Node node   : globalOpts.getAllNodes()) {
+        for (Node node   : db.getAllNodes()) {
             data[0]=String.valueOf(node.getId());
             data[1]= toLabelString(node);
             for (int i = 2; i < cols.length; i++) {
@@ -201,14 +201,13 @@ public class ImportCsvApp extends AbstractApp {
         for (Label label : labels) {
             sb.append(":");
             sb.append(label.name());
-
         }
         return sb.toString();
     }
 
-    private String[] getAllProperties(GlobalGraphOperations globalOpts) {
-        ResourceIterable<String> allProperties = globalOpts.getAllPropertyKeys();
-        String[] cols = new String[IteratorUtil.count(allProperties)+2];
+    private String[] getAllProperties(GraphDatabaseService db) {
+        ResourceIterable<String> allProperties = db.getAllPropertyKeys();
+        String[] cols = new String[(int) (Iterables.count(allProperties)+2)];
         cols[0]="id:id";
         cols[1]="id:label";
         int idx=2;

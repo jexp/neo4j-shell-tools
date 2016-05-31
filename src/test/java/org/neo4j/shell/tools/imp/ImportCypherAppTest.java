@@ -5,8 +5,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.helpers.collection.IteratorUtil;
-import org.neo4j.kernel.GraphDatabaseAPI;
+import org.neo4j.helpers.collection.Iterables;
+import org.neo4j.kernel.internal.GraphDatabaseAPI;
 import org.neo4j.shell.ShellException;
 import org.neo4j.shell.impl.SameJvmClient;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
@@ -38,8 +38,8 @@ public class ImportCypherAppTest {
 
     @Test
     public void testRunWithOutputFile() throws Exception {
-        assertCommand(client, "import-cypher -o out.csv create n return id(n) as id",
-                "Query: create n return id(n) as id infile (none) delim ',' quoted false outfile out.csv"
+        assertCommand(client, "import-cypher -o out.csv create (n) return id(n) as id",
+                "Query: create (n) return id(n) as id infile (none) delim ',' quoted false outfile out.csv"
                 , "Import statement execution created 1 rows of output.");
         assertFile("id", "1");
         try (Transaction tx = db.beginTx()) {
@@ -85,7 +85,7 @@ public class ImportCypherAppTest {
         try (Transaction tx = db.beginTx()) {
             Node node = db.getNodeById(1);
             assertEquals("foo", node.getProperty("name"));
-            assertEquals("Bar", IteratorUtil.single(node.getLabels()).name());
+            assertEquals("Bar", Iterables.single(node.getLabels()).name());
             tx.success();
         }
     }
@@ -171,8 +171,8 @@ public class ImportCypherAppTest {
 
     @Test
     public void testRunWithOutputFileAndMultipleLines() throws Exception {
-        assertCommand(client, "import-cypher -o out.csv start x=node(0,0) create n return id(n) as id",
-                "Query: start x=node(0,0) create n return id(n) as id infile (none) delim ',' quoted false outfile out.csv",
+        assertCommand(client, "import-cypher -o out.csv start x=node(0,0) create (n) return id(n) as id",
+                "Query: start x=node(0,0) create (n) return id(n) as id infile (none) delim ',' quoted false outfile out.csv",
                 "Import statement execution created 2 rows of output.");
         assertFile("id","1","2");
         try (Transaction tx = db.beginTx()) {

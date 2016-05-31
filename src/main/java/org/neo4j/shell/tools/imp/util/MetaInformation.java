@@ -1,15 +1,16 @@
 package org.neo4j.shell.tools.imp.util;
 
 import org.neo4j.cypher.export.SubGraph;
-import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.PropertyContainer;
 import org.neo4j.graphdb.Relationship;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static org.neo4j.helpers.collection.Iterables.join;
 
 /**
  * @author mh
@@ -58,10 +59,9 @@ public class MetaInformation {
     }
 
     public static String getLabelsString(Node node) {
-        Iterator<Label> it = node.getLabels().iterator();
-        if (it.hasNext()) {
-            return ":" + join(":", it);
-        }
-        return "";
+        if (!node.getLabels().iterator().hasNext()) return "";
+        String delimiter = ":";
+        return ":" + FormatUtils.joinLabels(node, delimiter);
     }
+
 }
