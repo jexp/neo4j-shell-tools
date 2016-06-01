@@ -9,28 +9,28 @@ import java.util.NoSuchElementException;
 /**
  * Created by mh on 10.07.13.
  */
-public class MapNodeCache implements NodeCache {
-    private final Map<String,Long> map;
+public class MapNodeCache<K, V> implements NodeCache<K, V> {
+    private final Map<K, V> map;
 
-    public MapNodeCache(Map<String, Long> map) {
+    public MapNodeCache(Map<K, V> map) {
         this.map = map;
     }
 
-    public static NodeCache usingMapDb() {
-        return new MapNodeCache(DBMaker.<String,Long>newTempHashMap());
+    public static <K, V>  NodeCache<K, V> usingMapDb() {
+        return new MapNodeCache(DBMaker.<K, V>newTempHashMap());
     }
-    public static NodeCache usingHashMap() {
-        return new MapNodeCache(new HashMap<String, Long>(1024*1024,0.95f));
-    }
-
-    @Override
-    public void put(String name, long id) {
-        map.put(name,id);
+    public static <K, V>  NodeCache<K, V> usingHashMap() {
+        return new MapNodeCache(new HashMap<K, V>(1024*1024,0.95f));
     }
 
     @Override
-    public long get(String name) {
-        Long id = map.get(name);
+    public void put(K name, V id) {
+        map.put(name, id);
+    }
+
+    @Override
+    public V get(K name) {
+        V id = map.get(name);
         if (id==null) throw new NoSuchElementException("No Element for "+name);
         return id;
     }
