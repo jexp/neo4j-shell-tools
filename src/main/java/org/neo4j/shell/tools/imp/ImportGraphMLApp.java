@@ -76,7 +76,7 @@ public class ImportGraphMLApp extends AbstractApp {
                     .batchSize(batchSize).relType(relType)
                     .nodeLabels(readLabels)
                     .reporter(reporter);
-            NodeCache cache = diskSpillCache ? MapNodeCache.usingMapDb() : MapNodeCache.usingHashMap();
+            NodeCache cache = diskSpillCache ? MapNodeCache.<String, Long>usingMapDb() : MapNodeCache.<String, Long>usingHashMap();
             return graphMLReader.parseXML(reader, cache);
         } finally {
             reader.close();

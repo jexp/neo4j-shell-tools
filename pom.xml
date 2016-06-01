@@ -54,6 +54,11 @@
     </repositories>
     <dependencies>
         <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>kryo</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+        <dependency>
             <groupId>org.mapdb</groupId>
             <artifactId>mapdb</artifactId>
             <version>0.9.3</version>

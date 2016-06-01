@@ -44,7 +44,7 @@ public class GraphMLReaderPerformanceTest {
 
     @Test
     public void testReadEnronData() throws Exception {
-        NodeCache cache = MapNodeCache.usingMapDb();
+        NodeCache cache = MapNodeCache.<String, Long>usingMapDb();
         this.graphMlReader.parseXML(reader, cache);
     }
 

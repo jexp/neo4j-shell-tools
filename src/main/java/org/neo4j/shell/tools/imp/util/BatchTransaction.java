@@ -34,6 +34,14 @@ public class BatchTransaction implements AutoCloseable {
         doCommit(true);
     }
 
+    public int getCount() {
+        return count;
+    }
+
+    public void manualCommit(boolean log) {
+        doCommit(log);
+    }
+
     private void doCommit(boolean log) {
         tx.success();
         tx.close();
