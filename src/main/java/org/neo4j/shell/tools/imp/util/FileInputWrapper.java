@@ -1,7 +1,5 @@
 package org.neo4j.shell.tools.imp.util;
 
-import com.esotericsoftware.kryo.io.Input;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -10,14 +8,9 @@ import java.io.IOException;
  */
 public class FileInputWrapper implements SizeCounter {
 
-//    private final Input input;
-//    private final long size;
-
     private final FileInputStream fileInputStream;
 
     public FileInputWrapper(FileInputStream fileInputStream) {
-//        this.input = input;
-//        this.size = size;
         this.fileInputStream = fileInputStream;
     }
 
