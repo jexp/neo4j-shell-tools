@@ -35,7 +35,7 @@ public class KryoReader {
 
     public long readBinaryDump(Input input, BatchTransaction tx, NodeCache<Long, Long> cache) throws IOException {
         if (input.available() > 0) {
-            KryoSerializationTypes type = kryo.readObject(input, KryoSerializationTypes.class);
+            KryoSerializationTypes type = KryoSerializationTypes.valueOf(kryo.readObject(input, String.class));
 
             // Cannot perform data updates in a transaction that has performed schema updates
             output.println("Importing Indices and Constraints");
@@ -69,7 +69,7 @@ public class KryoReader {
                     throw new RuntimeException("Encountered corrupt serialization");
                 }
 
-                type = kryo.readObject(input, KryoSerializationTypes.class);
+                type = KryoSerializationTypes.valueOf(kryo.readObject(input, String.class));
             }
 
             // Write Transaction
@@ -91,7 +91,6 @@ public class KryoReader {
 
                     // Add Node to Database
                     Node node = gdb.createNode(labels.toArray(new Label[labels.size()]));
-                    node.setProperty("id", id);
                     if (properties != null) {
                         for (Map.Entry<String, Object> entry : properties.entrySet()) {
                             node.setProperty(entry.getKey(), entry.getValue());
@@ -118,7 +117,6 @@ public class KryoReader {
                     Node from = gdb.getNodeById(cache.get(startNodeId));
                     Node to = gdb.getNodeById(cache.get(targetNodeId));
                     Relationship relationship = from.createRelationshipTo(to, relationshipType);
-                    relationship.setProperty("id", id);
                     if (properties != null) {
                         for (Map.Entry<String, Object> entry : properties.entrySet()) {
                             relationship.setProperty(entry.getKey(), entry.getValue());
@@ -132,7 +130,7 @@ public class KryoReader {
                     throw new RuntimeException("Encountered corrupt serialization");
                 }
 
-                type = kryo.readObject(input, KryoSerializationTypes.class);
+                type = KryoSerializationTypes.valueOf(kryo.readObject(input, String.class));
             }
         }
 

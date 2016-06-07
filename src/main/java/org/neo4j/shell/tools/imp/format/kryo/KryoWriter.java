@@ -43,12 +43,12 @@ public class KryoWriter {
             reporter.update(0, 1, props);
         }
         // WRITE END DUMP
-        kryo.writeObject(output, KryoSerializationTypes.DUMP_END);
+        kryo.writeObject(output, KryoSerializationTypes.DUMP_END.name());
     }
 
     private void writeConstraint(Output output, ConstraintDefinition constraintDefinition) {
         // WRITE CONSTRAINT START
-        kryo.writeObject(output, KryoSerializationTypes.CONSTRAINT);
+        kryo.writeObject(output, KryoSerializationTypes.CONSTRAINT.name());
         // WRITE CONSTRAINT LABEL
         kryo.writeObject(output, constraintDefinition.getLabel().name());
         // WRITE PROPERTY KEYS
@@ -64,7 +64,7 @@ public class KryoWriter {
         // Constraints indices are handled when we write out constraints
         if (!indexDefinition.isConstraintIndex()) {
             // WRITE INDEX START
-            kryo.writeObject(output, KryoSerializationTypes.INDEX);
+            kryo.writeObject(output, KryoSerializationTypes.INDEX.name());
             // WRITE INDEX LABEL
             kryo.writeObject(output, indexDefinition.getLabel().name());
             // WRITE PROPERTY KEYS
@@ -79,7 +79,7 @@ public class KryoWriter {
 
     private int writeNode(Output output, Node node) {
         // WRITE NODE START
-        kryo.writeObject(output, KryoSerializationTypes.NODE);
+        kryo.writeObject(output, KryoSerializationTypes.NODE.name());
         // WRITE ID
         kryo.writeObject(output, node.getId());
         // WRITE LABELS
@@ -97,7 +97,7 @@ public class KryoWriter {
 
     private int writeRelationship(Output output, Relationship relationship) {
         // WRITE RELATIONSHIP
-        kryo.writeObject(output, KryoSerializationTypes.RELATIONSHIP);
+        kryo.writeObject(output, KryoSerializationTypes.RELATIONSHIP.name());
         kryo.writeObject(output, relationship.getId());
         // WRITE SOURCE
         kryo.writeObject(output, relationship.getStartNode().getId());

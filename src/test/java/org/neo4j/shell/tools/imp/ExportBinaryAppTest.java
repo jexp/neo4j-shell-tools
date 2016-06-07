@@ -15,39 +15,37 @@ import java.io.*;
 import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.Random;
-import java.util.Scanner;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.neo4j.shell.tools.Asserts.assertCommand;
-import static org.neo4j.shell.tools.imp.ExportXmlGraphMLWriterTest.*;
-import static org.neo4j.shell.tools.imp.ExportXmlGraphMLWriterTest.TEST_XML_FOOTER;
+import static org.neo4j.shell.tools.imp.ExportXmlGraphMLWriterTest.LABEL;
+import static org.neo4j.shell.tools.imp.ExportXmlGraphMLWriterTest.TYPE;
 
 /**
  * Created by efulton on 5/9/16.
  */
-public class ExportKryoAppTest {
+public class ExportBinaryAppTest {
 
     private final Random random = new Random(1);
     private GraphDatabaseAPI db;
     private SameJvmClient client;
 
     @Test
-    public void testExportBinary() throws Exception {
+    public void testExportKryo() throws Exception {
         createData(1000);
-        assertCommand(client, "export-binary -o target/export.bin", "Wrote to binary file target/export.bin 0. 100%: nodes = 1000 rels = 1000 properties = 2000 time");
-        InputStream realStream = getClass().getResourceAsStream("/export.bin");
-        InputStream testStream = new FileInputStream("target/export.bin");
+        assertCommand(client, "export-binary -o target/kryo-export.bin", "Wrote to binary file target/kryo-export.bin 0. 100%: nodes = 1000 rels = 1000 properties = 2000 time");
+        InputStream realStream = getClass().getResourceAsStream("/kryo-export.bin");
+        InputStream testStream = new FileInputStream("target/kryo-export.bin");
         assertTrue(streamsAreEqual(realStream, testStream));
     }
 
     @Test
-    public void testExportTinyGraph() throws Exception {
+    public void testExportTinyKryoGraph() throws Exception {
         createData(1);
-        assertCommand(client, "export-binary -o target/tiny-export.bin", "Wrote to binary file target/tiny-export.bin 0. 100%: nodes = 1 rels = 1 properties = 2 time");
+        assertCommand(client, "export-binary -o target/tiny-kryo-export.bin", "Wrote to binary file target/tiny-kryo-export.bin 0. 100%: nodes = 1 rels = 1 properties = 2 time");
 
-        InputStream realStream = getClass().getResourceAsStream("/tiny-export.bin");
-        InputStream testStream = new FileInputStream("target/tiny-export.bin");
+        InputStream realStream = getClass().getResourceAsStream("/tiny-kryo-export.bin");
+        InputStream testStream = new FileInputStream("target/tiny-kryo-export.bin");
         assertTrue(streamsAreEqual(realStream, testStream));
     }
 
