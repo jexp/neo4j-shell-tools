@@ -134,7 +134,7 @@ public class XmlGraphMLReader {
         this.gdb = gdb;
     }
 
-    public long parseXML(Reader input, NodeCache cache) throws XMLStreamException {
+    public long parseXML(Reader input, NodeCache<String, Long> cache) throws XMLStreamException {
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         inputFactory.setProperty("javax.xml.stream.isCoalescing", true);
         XMLEventReader reader = inputFactory.createXMLEventReader(input);
