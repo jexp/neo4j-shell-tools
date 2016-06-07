@@ -19,14 +19,14 @@ import static org.neo4j.shell.tools.Asserts.assertCommand;
 /**
  * Created by efulton on 5/9/16.
  */
-public class ImportKryoAppTest {
+public class ImportBinaryAppTest {
 
     private GraphDatabaseAPI db;
     private SameJvmClient client;
 
     @Test
     public void testRunWithInputFile() throws Exception {
-        String path = getClass().getResource("/export.bin").getPath();
+        String path = getClass().getResource("/kryo-export.bin").getPath();
         runImport(path);
     }
 
@@ -41,7 +41,6 @@ public class ImportKryoAppTest {
             "finish after 2000 row(s)  0. 100%: nodes = 1000 rels = 1000 properties = 2000");
         try (Transaction tx = db.beginTx()) {
             assertEquals("John & Dö", db.getNodeById(0).getProperty("na<>me"));
-            assertEquals(5l, db.getNodeById(5).getProperty("id"));
             tx.success();
         }
     }
