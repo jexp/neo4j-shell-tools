@@ -57,6 +57,16 @@
             <groupId>com.esotericsoftware</groupId>
             <artifactId>kryo</artifactId>
             <version>3.0.3</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.ow2.asm</groupId>
+					<artifactId>asm</artifactId>
+            	</exclusion>
+            	<!--exclusion>
+            		<groupId>org.objenesis</groupId>
+					<artifactId>objenesis</artifactId>
+            	</exclusion-->
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mapdb</groupId>
