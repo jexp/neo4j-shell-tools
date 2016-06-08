@@ -6,7 +6,7 @@ import org.neo4j.cypher.export.SubGraph;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.kernel.GraphDatabaseAPI;
+import org.neo4j.kernel.internal.GraphDatabaseAPI;
 import org.neo4j.shell.*;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
 import org.neo4j.shell.tools.imp.format.kryo.KryoWriter;
