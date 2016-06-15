@@ -11,12 +11,10 @@ import org.neo4j.shell.*;
 import org.neo4j.shell.kernel.GraphDatabaseShellServer;
 import org.neo4j.shell.tools.imp.format.kryo.KryoWriter;
 import org.neo4j.shell.tools.imp.util.Config;
+import org.neo4j.shell.tools.imp.util.FileUtils;
 import org.neo4j.shell.tools.imp.util.ProgressReporter;
 
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.zip.DeflaterOutputStream;
 
 /**
@@ -76,8 +74,8 @@ public class ExportBinaryApp extends BinaryApp {
     }
 
     private void writeKryo(String fileName, GraphDatabaseService db, SubGraph graph, ProgressReporter reporter, Config config) throws Exception {
-        OutputStream outputStream = new DeflaterOutputStream(new FileOutputStream(fileName, true));
-        com.esotericsoftware.kryo.io.Output output = new com.esotericsoftware.kryo.io.Output(outputStream);
+        OutputStream outputStream = new BufferedOutputStream(new DeflaterOutputStream(new FileOutputStream(fileName, true), false), FileUtils.MEGABYTE);
+        com.esotericsoftware.kryo.io.Output output = new com.esotericsoftware.kryo.io.Output(outputStream, FileUtils.MEGABYTE);
         try (Transaction tx = db.beginTx()) {
             KryoWriter kryoWriter = new KryoWriter();
             kryoWriter.write(graph, output, reporter, config);

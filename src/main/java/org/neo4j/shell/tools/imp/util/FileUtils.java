@@ -13,6 +13,8 @@ import java.util.Objects;
  */
 public class FileUtils {
 
+    public static final int MEGABYTE = 1024 * 1024;
+
     public static CountingReader readerFor(String fileName) throws IOException {
         if (fileName==null) return null;
         if (fileName.startsWith("http") || fileName.startsWith("file:")) {
@@ -29,7 +31,7 @@ public class FileUtils {
 
     public static PrintWriter getPrintWriter(String fileName, Output out) throws IOException {
         if (fileName == null) return null;
-        Writer writer = fileName.equals("-") ? new OutputAsWriter(out) : new BufferedWriter(new FileWriter(fileName));
+        Writer writer = fileName.equals("-") ? new OutputAsWriter(out) : new BufferedWriter(new FileWriter(fileName),MEGABYTE);
         return new PrintWriter(writer);
     }
 
