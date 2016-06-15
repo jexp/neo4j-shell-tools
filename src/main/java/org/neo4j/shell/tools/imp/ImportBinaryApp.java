@@ -7,6 +7,7 @@ import org.neo4j.shell.kernel.GraphDatabaseShellServer;
 import org.neo4j.shell.tools.imp.format.kryo.KryoReader;
 import org.neo4j.shell.tools.imp.util.*;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.InflaterInputStream;
@@ -74,20 +75,18 @@ public class ImportBinaryApp extends BinaryApp {
     }
 
     private void readKryo(String fileName, FileInputStream fileInputStream, Output out, boolean diskSpillCache, int batchSize, String relType) throws IOException {
-        Input input = new Input(new InflaterInputStream(fileInputStream));
+        Input input = new Input(new InflaterInputStream(new BufferedInputStream(fileInputStream,FileUtils.MEGABYTE)),FileUtils.MEGABYTE);
         FileInputWrapper fileInputWrapper = new FileInputWrapper(fileInputStream);
-        if (input != null) {
-            out.println(String.format("Binary import file %s rel-type %s batch-size %d use disk-cache %s", fileName, relType, batchSize, diskSpillCache));
-            ProgressReporter reporter = new ProgressReporter(fileInputWrapper, out);
-            GraphDatabaseService db = getServer().getDb();
-            NodeCache cache = diskSpillCache ? MapNodeCache.<Long, Long>usingMapDb() : MapNodeCache.<Long, Long>usingHashMap();
-            try(BatchTransaction tx = new BatchTransaction(db, batchSize, reporter)) {
-                KryoReader importReader = new KryoReader(db, relType, reporter, out);
-                long count = importReader.readBinaryDump(input, tx, cache);
-                out.println("Binary import created " + count + " entities.");
-            } finally {
-                input.close();
-            }
+        out.println(String.format("Binary import file %s rel-type %s batch-size %d use disk-cache %s", fileName, relType, batchSize, diskSpillCache));
+        ProgressReporter reporter = new ProgressReporter(fileInputWrapper, out);
+        GraphDatabaseService db = getServer().getDb();
+        NodeCache cache = diskSpillCache ? MapNodeCache.<Long, Long>usingMapDb() : MapNodeCache.<Long, Long>usingHashMap();
+        try(BatchTransaction tx = new BatchTransaction(db, batchSize, reporter)) {
+            KryoReader importReader = new KryoReader(db, relType, reporter, out);
+            long count = importReader.readBinaryDump(input, tx, cache);
+            out.println("Binary import created " + count + " entities.");
+        } finally {
+            input.close();
         }
     }
 }
