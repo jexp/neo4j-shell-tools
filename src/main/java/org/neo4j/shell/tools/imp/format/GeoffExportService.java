@@ -40,15 +40,6 @@ class GeoffExportService {
         }
     }
 
-    private void appendRelationship(Writer writer, Relationship rel) throws IOException {
-        formatNodeId(writer, rel.getStartNode());
-        writer.write("-[:");
-        writer.write(rel.getType().name());
-        writer.write("]->");
-        formatNodeId(writer, rel.getEndNode());
-        formatProperties(writer, rel);
-    }
-
     private void appendNodes(Writer writer, Reporter reporter) throws IOException {
         for (Node node : gdb.getNodes()) {
             writer.write("(");
