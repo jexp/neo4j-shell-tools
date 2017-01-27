@@ -92,7 +92,7 @@ public class XmlGraphMLWriter {
         return "n" + node.getId();
     }
 
-    private void writeLabels(XMLStreamWriter writer, Node node) throws IOException, XMLStreamException {
+    private static void writeLabels(XMLStreamWriter writer, Node node) throws IOException, XMLStreamException {
         String labelsString = getLabelsString(node);
         if (!labelsString.isEmpty()) writer.writeAttribute("labels", labelsString);
     }
@@ -168,7 +168,7 @@ public class XmlGraphMLWriter {
         newLine(writer);
     }
 
-    private void newLine(XMLStreamWriter writer) throws XMLStreamException {
+    private static void newLine(XMLStreamWriter writer) throws XMLStreamException {
         writer.writeCharacters("\n");
     }
 }
