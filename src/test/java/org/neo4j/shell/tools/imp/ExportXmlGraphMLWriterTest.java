@@ -81,7 +81,7 @@ public class ExportXmlGraphMLWriterTest {
         ProgressReporter reporter = new ProgressReporter(null, null);
         String xml = doExport(reporter, false);
         assertEquals(new ElementCounter().update(1, 1, 2), reporter.getTotal());
-        assertEquals(TEST_XML_HEADER+TEST_XML_DATA+TEST_XML_FOOTER,xml);
+        assertEquals(TEST_XML_HEADER+TEST_XML_GRAPH+TEST_XML_DATA+TEST_XML_FOOTER,xml);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class ExportXmlGraphMLWriterTest {
         ProgressReporter reporter = new ProgressReporter(null, null);
         String xml = doExport(reporter,true);
         assertEquals(new ElementCounter().update(1, 1, 2), reporter.getTotal());
-        assertEquals(TEST_XML_HEADER+TEST_XML_KEYS+TEST_XML_DATA+TEST_XML_FOOTER,xml);
+        assertEquals(TEST_XML_HEADER+TEST_XML_GRAPH+TEST_XML_KEYS+TEST_XML_DATA+TEST_XML_FOOTER,xml);
     }
 
     private void createData(int nodes) {
