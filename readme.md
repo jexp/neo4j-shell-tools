@@ -4,12 +4,12 @@
 
 ### Installation
 
-Download [neo4j-shell-tools_3.0.1.zip](http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_3.0.1.zip) and extract it in your
+Download [neo4j-shell-tools_3.1.0.zip](http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_3.1.0.zip) and extract it in your
 Neo4j Server's lib directory e.g.
 
 ```
-cd /path/to/neo4j-community-3.0.1
-curl http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_3.0.1.zip -o neo4j-shell-tools.zip
+cd /path/to/neo4j-community-3.1.0
+curl http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_3.1.0.zip -o neo4j-shell-tools.zip
 unzip neo4j-shell-tools.zip -d lib
 ```
 
@@ -18,7 +18,7 @@ unzip neo4j-shell-tools.zip -d lib
 The following script does the above installation automatically, and sets the `$NEO4J_HOME` path; works on Unix:
 
 ```
-NEO4J_HOME=$(neo4j-shell -c 'dbinfo -g Kernel StoreDirectory' | grep -oE '\/.*lib.*?\/') && curl -Lk -o neo4j-shell-tools.zip http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_3.0.1.zip && unzip neo4j-shell-tools.zip -d ${NEO4J_HOME}lib
+NEO4J_HOME=$(neo4j-shell -c 'dbinfo -g Kernel StoreDirectory' | grep -oE '\/.*lib.*?\/') && curl -Lk -o neo4j-shell-tools.zip http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_3.1.0.zip && unzip neo4j-shell-tools.zip -d ${NEO4J_HOME}lib
 ```
 
 ### Before you start
@@ -26,7 +26,7 @@ NEO4J_HOME=$(neo4j-shell -c 'dbinfo -g Kernel StoreDirectory' | grep -oE '\/.*li
 Restart neo4j and then launch the neo4j-shell:
 
 ```
-cd /path/to/neo4j-community-3.0.1
+cd /path/to/neo4j-community-3.1.0
 ./bin/neo4j restart
 ./bin/neo4j-shell
 ```
@@ -47,14 +47,14 @@ create index on :Person(age);
 ### Import
 
 Then choose a suitable import command, depending on how your data is structured.
-* If your data is formatted as CSV and you want to use [cypher](http://neo4j.com/docs/stable/cypher-query-lang.html) statements for importing it, use the [Cypher Import](#cypher-import) command.
+* If your data is formatted as CSV and you want to use [Cypher](http://neo4j.com/docs/stable/cypher-query-lang.html) statements for importing it, use the [Cypher Import](#cypher-import) command.
 * If your data is in [GraphML](http://graphml.graphdrawing.org/) format, use the [GraphML Import](#graphml-import) command.
 * If your data is in [Geoff](http://nigelsmall.com/geoff) format, use the [Geoff Import](#geoff-import) command.
 * If your data is in Binary format, use the [Binary Import](#binary-import) command.
 
 #### Cypher Import
 
-Populate your database with [write clauses](http://neo4j.com/docs/stable/query-write.html) in the [cypher](http://neo4j.com/docs/stable/cypher-query-lang.html) query language.
+Populate your database with [write clauses](http://neo4j.com/docs/stable/query-write.html) in the [Cypher](http://neo4j.com/docs/stable/cypher-query-lang.html) query language.
 
 ```
 $ import-cypher [-i in.csv] [-o out.csv] [-d ,] [-q] [-b 10000] create (n:#{label} {name: {name}, age: {age}}) return id(n) as id, n.name as name
@@ -109,13 +109,13 @@ Supported Types
 
 #### Geoff Import
 
-Populate your database with [geoff](http://nigelsmall.com/geoff) - a declarative notation for representing graph data in a human-readable format.
+Populate your database with [Geoff](http://nigelsmall.com/geoff) - a declarative notation for representing graph data in a human-readable format.
 
 ```
 $ import-geoff [-i in.geoff]
 ```
 
-- -i in.geoff: newline separated geoff rule file (or URL)
+- -i in.geoff: newline separated Geoff rule file (or URL)
 
 Example input file: in.geoff
 
@@ -326,13 +326,13 @@ An up and running neo4j database which you can [download from here](http://www.n
 #### Libraries used
 * Cypher Import uses [opencsv-2.3.jar](http://opencsv.sourceforge.net/) for parsing CSV files.
 * GraphML Import uses [mapdb-0.9.3.jar](http://www.mapdb.org/) as part of the cache (-c) flag for very large imports
-* Geoff Import uses [neo4j-geoff-1.7-SNAPSHOT.jar](http://nigelsmall.com/geoff)
+* Geoff Import uses [geoff-0.5.0.jar](http://nigelsmall.com/geoff) ([jar](https://github.com/neo4j-contrib/m2/tree/master/releases/com/nigelsmall/geoff/0.5.0))
 
 #### More on GraphML
 
 The 'import-graphml' command supports attributes, supports only single pass parsing, optimization for `parse.nodeids="canonical"`
 
-An import of [@chrisdiehl](https://twitter.com/chrisdiehl)'s [Enron Dataset](http://www.infochimps.com/datasets/enron-email-data-with-manager-subordinate-relationship-metadata) took 5 minutes on a MBA:
+An import of [@chrisdiehl](https://twitter.com/chrisdiehl)'s [Enron Dataset](http://www.cpdiehl.org/2011/01/enron-email-data-and-manager-subordinate-relationship-metadata.html) took 5 minutes on a MBA:
 
 `Finished: nodes = 343266 rels = 1903201 properties = 8888993 total time 313491 ms`
 
