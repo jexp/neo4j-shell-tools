@@ -31,7 +31,8 @@ public class ExportXmlGraphMLWriterTest {
     static final DynamicRelationshipType TYPE = DynamicRelationshipType.withName("BAR");
     static final String TEST_XML_HEADER =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" +
+            "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n";
+    static final String TEST_XML_GRAPH = 
             "<graph id=\"G\" edgedefault=\"directed\">\n";
     static final String TEST_XML_KEYS =
             "<key id=\"na&lt;&gt;me\" for=\"node\" attr.name=\"na&lt;&gt;me\" attr.type=\"string\"/>\n" +
@@ -80,7 +81,7 @@ public class ExportXmlGraphMLWriterTest {
         ProgressReporter reporter = new ProgressReporter(null, null);
         String xml = doExport(reporter, false);
         assertEquals(new ElementCounter().update(1, 1, 2), reporter.getTotal());
-        assertEquals(TEST_XML_HEADER+TEST_XML_DATA+TEST_XML_FOOTER,xml);
+        assertEquals(TEST_XML_HEADER+TEST_XML_GRAPH+TEST_XML_DATA+TEST_XML_FOOTER,xml);
     }
 
     @Test
@@ -89,7 +90,7 @@ public class ExportXmlGraphMLWriterTest {
         ProgressReporter reporter = new ProgressReporter(null, null);
         String xml = doExport(reporter,true);
         assertEquals(new ElementCounter().update(1, 1, 2), reporter.getTotal());
-        assertEquals(TEST_XML_HEADER+TEST_XML_KEYS+TEST_XML_DATA+TEST_XML_FOOTER,xml);
+        assertEquals(TEST_XML_HEADER+TEST_XML_KEYS+TEST_XML_GRAPH+TEST_XML_DATA+TEST_XML_FOOTER,xml);
     }
 
     private void createData(int nodes) {
