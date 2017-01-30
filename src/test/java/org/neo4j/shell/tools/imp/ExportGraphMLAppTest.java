@@ -75,7 +75,7 @@ public class ExportGraphMLAppTest {
     public void testExportTinyGraphWithKeys() throws Exception {
         createData(1);
         assertCommand(client, "export-graphml -t -o target/test.xml",
-                "Wrotex to GraphML-file target/test.xml 0. 100%: nodes = 1 rels = 1 properties = 2 time");
+                "Wrote to GraphML-file target/test.xml 0. 100%: nodes = 1 rels = 1 properties = 2 time");
         String fileContent = new Scanner(new File("target/test.xml")).useDelimiter("\\Z").next();
         assertEquals(TEST_XML_HEADER+TEST_XML_KEYS+TEST_XML_GRAPH+TEST_XML_DATA+TEST_XML_FOOTER,fileContent);
     }
