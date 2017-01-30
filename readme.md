@@ -300,9 +300,9 @@ Example output file: out.graphml
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
  http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-<graph id="G" edgedefault="directed">
 <key id="name" for="node" attr.name="name" attr.type="string"/>
 <key id="count" for="edge" attr.name="count" attr.type="int"/>
+<graph id="G" edgedefault="directed">
 <node id="n0" labels=":FOO" ><data key="labels">:FOO</data><data key="name">John Doe</data></node>
 <node id="n1" labels=":FOO" ><data key="labels">:FOO</data><data key="name">Jane Doe</data></node>
 <edge id="e0" source="n0" target="n1" label="KNOWS"><data key="label">KNOWS</data><data key="count">0</data></edge>
