@@ -87,6 +87,7 @@ public class ExportGraphMLAppTest {
                 node.setProperty("na<>me","John & Dö");
             }
             for (int i=0;i< nodes;i++) {
+                Node from = db.getNodeById(random.nextInt(nodes));
                 assertEquals(TEST_XML_HEADER+TEST_XML_KEYS+TEST_XML_GRAPH+TEST_XML_DATA+TEST_XML_FOOTER,fileContent);
                 Node to = db.getNodeById(random.nextInt(nodes));
                 Relationship rel = from.createRelationshipTo(to, TYPE);
