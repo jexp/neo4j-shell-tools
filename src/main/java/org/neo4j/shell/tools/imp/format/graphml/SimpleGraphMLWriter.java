@@ -136,7 +136,7 @@ public class SimpleGraphMLWriter {
     }
 
     private void writeGraph(Writer writer) throws IOException {
-        writer.write("<graph id=\"G\" edgedefault=\"directed\"\n");
+        writer.write("<graph id=\"G\" edgedefault=\"directed\">\n");
     }
 
 }
