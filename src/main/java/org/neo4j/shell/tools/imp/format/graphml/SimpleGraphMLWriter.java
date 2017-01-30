@@ -27,6 +27,7 @@ public class SimpleGraphMLWriter {
     public void write(SubGraph graph, Writer writer, Reporter reporter, Config config) throws IOException {
         writeHeader(writer);
         if (config.useTypes()) writeKeyTypes(writer, graph);
+        writeGraph(writer);
         for (Node node : graph.getNodes()) {
             int props=writeNode(writer,node);
             reporter.update(1,0,props);
@@ -131,6 +132,11 @@ public class SimpleGraphMLWriter {
                 "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\"\n" +
                 " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
                 " xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns\n" +
-                " http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" +
-                "<graph id=\"G\" edgedefault=\"directed\">\n");
-    }}
+                " http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n";
+    }
+
+    private void writeGraph(Writer writer) throws IOException {
+        writer.write("<graph id=\"G\" edgedefault=\"directed\"\n");
+    }
+
+}
