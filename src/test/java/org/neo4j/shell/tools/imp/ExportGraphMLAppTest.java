@@ -41,7 +41,7 @@ public class ExportGraphMLAppTest {
         assertCommand(client, "export-graphml -o target/test.xml",
                 "Wrote to GraphML-file target/test.xml 0. 100%: nodes = 1 rels = 1 properties = 2 time");
         String fileContent = new Scanner(new File("target/test.xml")).useDelimiter("\\Z").next();
-        assertEquals(TEST_XML_HEADER+TEST_XML_DATA+TEST_XML_FOOTER,fileContent);
+        assertEquals(TEST_XML_HEADER+GRAPH+TEST_XML_DATA+TEST_XML_FOOTER,fileContent);
     }
 
     @Test
@@ -50,7 +50,7 @@ public class ExportGraphMLAppTest {
         assertCommand(client, "export-graphml -o target/test.xml match(n) return n",
                 "Wrote to GraphML-file target/test.xml 0. 100%: nodes = 1 rels = 0 properties = 1 time");
         String fileContent = new Scanner(new File("target/test.xml")).useDelimiter("\\Z").next();
-        assertEquals(TEST_XML_HEADER+TEST_XML_DATA_NODE+TEST_XML_FOOTER,fileContent);
+        assertEquals(TEST_XML_HEADER+GRAPH+TEST_XML_DATA_NODE+TEST_XML_FOOTER,fileContent);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class ExportGraphMLAppTest {
         assertCommand(client, "export-graphml -r -o target/test.xml match (n)-[r]->() return n,r",
                 "Wrote to GraphML-file target/test.xml 0. 100%: nodes = 1 rels = 1 properties = 2 time");
         String fileContent = new Scanner(new File("target/test.xml")).useDelimiter("\\Z").next();
-        assertEquals(TEST_XML_HEADER+TEST_XML_DATA+TEST_XML_FOOTER,fileContent);
+        assertEquals(TEST_XML_HEADER+GRAPH+TEST_XML_DATA+TEST_XML_FOOTER,fileContent);
     }
     @Test
     public void testExportTinyGraphWithCypherAndRelsInBetweenAndKeyTypes() throws Exception {
@@ -67,7 +67,7 @@ public class ExportGraphMLAppTest {
         assertCommand(client, "export-graphml -t -r -o target/test.xml match (n:FOO)-[r]->() return n,r",
                 "Wrote to GraphML-file target/test.xml 0. 100%: nodes = 1 rels = 1 properties = 2 time");
         String fileContent = new Scanner(new File("target/test.xml")).useDelimiter("\\Z").next();
-        assertEquals(TEST_XML_HEADER+TEST_XML_KEYS+TEST_XML_DATA+TEST_XML_FOOTER,fileContent);
+        assertEquals(TEST_XML_HEADER+TEST_XML_KEYS+GRAPH+TEST_XML_DATA+TEST_XML_FOOTER,fileContent);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ExportGraphMLAppTest {
         assertCommand(client, "export-graphml -t -o target/test.xml",
                 "Wrote to GraphML-file target/test.xml 0. 100%: nodes = 1 rels = 1 properties = 2 time");
         String fileContent = new Scanner(new File("target/test.xml")).useDelimiter("\\Z").next();
-        assertEquals(TEST_XML_HEADER+TEST_XML_KEYS+TEST_XML_DATA+TEST_XML_FOOTER,fileContent);
+        assertEquals(TEST_XML_HEADER+TEST_XML_KEYS+GRAPH+TEST_XML_DATA+TEST_XML_FOOTER,fileContent);
     }
 
     private void createData(int nodes) {

@@ -29,10 +29,10 @@ public class ExportXmlGraphMLWriterTest {
 
     static final Label LABEL = DynamicLabel.label("FOO");
     static final DynamicRelationshipType TYPE = DynamicRelationshipType.withName("BAR");
+    public static final String GRAPH = "<graph id=\"G\" edgedefault=\"directed\">\n";
     static final String TEST_XML_HEADER =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n" +
-            "<graph id=\"G\" edgedefault=\"directed\">\n";
+            "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">\n";
     static final String TEST_XML_KEYS =
             "<key id=\"na&lt;&gt;me\" for=\"node\" attr.name=\"na&lt;&gt;me\" attr.type=\"string\"/>\n" +
             "<key id=\"count\" for=\"edge\" attr.name=\"count\" attr.type=\"double\"/>\n";
