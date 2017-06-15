@@ -284,12 +284,12 @@ $ export-binary -o out.bin
 Export your Neo4j graph database to [GraphML](http://graphml.graphdrawing.org/) files. GraphML is an XML file format used to describe graphs. Can be used to import and visualize your graph in [Gephi](http://gephi.org).
 
 ```
-$ export-graphml [-o out.graphml] [-t] [-r] [match (n:Foo)-[r]->() return n,r]
+$ export-graphml [-t] [-r] [-o out.graphml] [match (n:Foo)-[r]->() return n,r]
 ```
 
-- -o out.graphml: graphml file to write to
 - -t write types, do a first pass over the data to determine property-types and write them to the graphml header
 - -r add all nodes of selected relationships
+- -o out.graphml: graphml file to write to
 - optional cypher query to select a subgraph to export
 
 Example output file: out.graphml
